@@ -57,7 +57,8 @@ const NaukriRegister = () => {
         phone:formData.mobile,
         location:currCity,
         experience:formData.workStatus,
-        roles:formData.roles
+        roles:formData.roles,
+        preferedLocations:formData.preferedLocations
       }
     })
       console.log(SendingData.data)
