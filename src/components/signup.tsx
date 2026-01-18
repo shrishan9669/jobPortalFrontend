@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa';
 import axios from 'axios';
 import BarLoader, { Spinner } from './loader';
+import TopPopup from '@/UserComponents/topPopUp';
 
 type FormDataType = {
   fullName: string;
@@ -48,7 +49,7 @@ const NaukriRegister = () => {
 
     try{
        const SendingData = await axios({
-      url:'https://jobportalbackend-whpt.onrender.com/user/UserCreate',
+      url:'http://localhost:3000/user/UserCreate',
       method:"POST",
       data:{
         name:formData.fullName,
@@ -59,11 +60,12 @@ const NaukriRegister = () => {
         experience:formData.workStatus,
         roles:formData.roles,
         preferedLocations:formData.preferedLocations
+
       }
     })
       console.log(SendingData.data)
       if(SendingData && SendingData.data){
-         window.location.href = '/signup/addEducation'
+         setPopup(true)
       }
     }
     catch(err){
@@ -302,10 +304,12 @@ function AddCity(e:any){
   setCityArr([e]);
 
 }
+const [showPopup,setPopup] = useState(false)
 
   return (
     <div className="min-h-screen font-aman flex gap-10 justify-center  bg-gray-50 items-start   p-4">
 
+       <TopPopup text="Now you can login." show={showPopup} onClose={()=> setPopup(false)}/>
         {/* Left chota div */}
 
        
