@@ -49,7 +49,7 @@ const NaukriRegister = () => {
 
     try{
        const SendingData = await axios({
-      url:'http://localhost:3000/user/UserCreate',
+      url:'https://jobportalbackend-whpt.onrender.com/user/UserCreate',
       method:"POST",
       data:{
         name:formData.fullName,
