@@ -1,11 +1,11 @@
 import { CiLocationOn } from "react-icons/ci";
-import { FaPhone, FaUserCircle } from "react-icons/fa";
+import { FaCrown, FaPhone, FaUserCircle } from "react-icons/fa";
 import { PiShoppingBagOpenLight } from "react-icons/pi";
 import { BsFileEarmarkPdfFill } from "react-icons/bs";
 
 import { FiEdit2 } from "react-icons/fi";
-import { TiShoppingBag } from "react-icons/ti";
-import { MdDeleteOutline, MdOutlineEdit, MdOutlineEmail, MdOutlineRadioButtonChecked } from "react-icons/md";
+
+import { MdDeleteOutline, MdOutlineEdit, MdOutlineRadioButtonChecked } from "react-icons/md";
 import { LuClipboardCopy } from "react-icons/lu";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
@@ -13,7 +13,7 @@ import { IoMdClose } from "react-icons/io";
 import { Spinner } from "../components/loader";
 import { GiTireIronCross } from "react-icons/gi";
 import { RxCross1, RxCrossCircled } from "react-icons/rx";
-import { X } from "lucide-react";
+import { LucideAlertCircle, X } from "lucide-react";
 export default function UpdateUser(){
 
     const[name,setName] = useState('');
@@ -246,29 +246,69 @@ export default function UpdateUser(){
 
                          {/* Key skills */}
 
-                         <div id="KeySkills" className="p-4 bg-white flex flex-col shadow-sm gap-5 rounded-2xl">
-                            <div className="flex font-medium items-center gap-3">
-                                Key skills <MdOutlineEdit onClick={()=> setKeySkillsPopup(true)}  className="text-slate-500 cursor-pointer"/>
-                            </div>
+                         <div id="KeySkills" className="p-6 bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-sm border border-gray-200/80 rounded-2xl shadow-lg">
+    {/* Header */}
+    <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100/80">
+        <div className="flex items-center gap-3">
+            <div className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                Key skills
+            </div>
+            <div 
+                onClick={() => setKeySkillsPopup(true)}
+                className="p-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 hover:from-blue-50 hover:to-cyan-50 cursor-pointer transition-all duration-300 hover:shadow-sm border border-gray-200/60 hover:border-blue-200/60"
+            >
+                <MdOutlineEdit className="text-gray-600 hover:text-blue-600 transition-colors" />
+            </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+            <div className="text-xs text-gray-500">{keySkills.length} skills</div>
+        </div>
+    </div>
 
+    {/* Empty State */}
+    {!keySkills.length && (
+        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50/50 to-cyan-50/50 rounded-xl border border-blue-100/50 mb-4">
+            <div className="p-2 rounded-lg bg-white">
+                <div className="w-6 h-6 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+                </div>
+            </div>
+            <div className="text-gray-600 text-sm leading-relaxed">
+                Recruiter prefer specific skills before hiring.
+            </div>
+        </div>
+    )}
 
-                            {!keySkills.length &&  <div className="flex gap-3 text-slate-500 text-sm">
-                               Recruiter prefer specific skills before hiring.
-                            </div>}
-                           
-                             
-                             {keySkills.length > 0   &&  <div className="flex flex-wrap gap-2">
-                            {
-                                keySkills.map((each:any)=>{
-                                    return <span className="text-slate-500 bg-gray-100 rounded-full px-4 py-1 text-sm border border-gray-400 ">{each}</span>
-                                })
-                            }
-                             </div>}
-                            
+    {/* Skills Display */}
+    {keySkills.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+            {keySkills.map((each: any, index: number) => (
+                <div 
+                    key={index}
+                    className="group relative"
+                >
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full blur opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                    <span className="relative px-5 py-2.5 bg-gradient-to-br from-white to-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-300/80 hover:border-blue-300/80 transition-all duration-300 hover:shadow-md group-hover:-translate-y-0.5">
+                        {each}
+                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </span>
+                </div>
+            ))}
+        </div>
+    )}
 
-                           
-
-                         </div>
+    {/* Divider */}
+    {keySkills.length > 0 && (
+        <div className="mt-6 pt-4 border-t border-gray-100/60">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-green-400 to-emerald-400"></div>
+                Skills help you get 3x more interview calls
+            </div>
+        </div>
+    )}
+</div>
 
                          {/* Employement */}
 
@@ -335,62 +375,6 @@ export default function UpdateUser(){
                         <ReUsableCommonDiv ID={'Summary'} firstSpan={'Profile Summary'} lastSpan={'Add profile summary'} MainContent={'Highlight your key career achievements to help employers know your potential'} gap={'3'}/>
 
 
-                        {/* Accomplishments */}
-                        
-                        {/* <div id="Accomplishments" className="bg-white rounded-2xl gap flex flex-col gap-4 p-4"> */}
-                            {/* <div className="flex flex-col gap-3">
-                                <span className="font-medium">Accomplishments</span>
-                                <p className="text-slate-500">Showcase your credentials by adding relevant certifications, work samples, online profiles, etc.</p>
-                            </div> */}
-
-                            {/* Adding links */}
-                            {/* <div  className="flex flex-col gap-5"> */}
-                        {/* <div className="flex  p-2  border-b border-dotted border-gray-400 flex-col gap-2">
-                                <div className="flex justify-between">
-                                    <span className="font-medium">Online profile</span>
-                                    <span className="text-blue-500 font-medium">Add</span>
-                                </div>
-                                <p className="text-slate-600">Add link to online professional profiles (e.g. LinkedIn, etc.)</p>
-                            </div>
-                            <div className="flex p-2  flex-col gap-2  border-b border-gray-400 border-dotted">
-                                <div className="flex justify-between">
-                                    <span className="font-medium">Work sample</span>
-                                    <span className="text-blue-500 font-medium">Add</span>
-                                </div>
-                                <p className="text-slate-600">Link relevant work samples (e.g. Github, Behance)</p>
-                            </div>
-                            <div className="flex p-2  flex-col gap-2  border-b border-gray-400 border-dotted">
-                                <div className="flex justify-between">
-                                    <span className="font-medium">White paper / Research publication / Journal entry</span>
-                                    <span className="text-blue-500 font-medium">Add</span>
-                                </div>
-                                <p className="text-slate-600">Add links to your online publications</p>
-                            </div>
-                            <div className="flex p-2  flex-col gap-2  border-b border-gray-400 border-dotted">
-                                <div className="flex justify-between">
-                                    <span className="font-medium">Add links to your online publications</span>
-                                    <span className="text-blue-500 font-medium">Add</span>
-                                </div>
-                                <p className="text-slate-600">Add links to your online presentations (e.g. Slide-share presentation links etc.)</p>
-                            </div>
-                            <div className="flex  p-2 flex-col gap-2  border-b border-gray-400 border-dotted">
-                                <div className="flex justify-between">
-                                    <span className="font-medium">Patent</span>
-                                    <span className="text-blue-500 font-medium">Add</span>
-                                </div>
-                                <p className="text-slate-600">Add details of patents you have filed</p>
-                            </div>
-                            <div className="flex p-2  flex-col gap-2">
-                                <div className="flex justify-between">
-                                    <span className="font-medium">Certification</span>
-                                    <span className="text-blue-500 font-medium">Add</span>
-                                </div>
-                                <p className="text-slate-600">Add details of certifications you have completed</p>
-                            </div> */}
-                            {/* </div> */}
-
-                            
-                        {/* </div> */}
 
 
                         {/* Career profile */}
@@ -456,139 +440,392 @@ export default function UpdateUser(){
                          </div>
 
                          {/* Personal details */}
-                         <div id="PersonalDetails" className="p-4 rounded-2xl shadow-lg bg-white flex flex-col gap-5">
-                            
-                            <div className="flex gap-3 items-center">
-                                <span className="font-medium">Personal details</span>
-                                <MdOutlineEdit onClick={()=> setPersonalPopup(true)}/>
-                            </div>
+                         <div id="PersonalDetails" className="p-6 bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-sm border border-gray-200/80 rounded-2xl shadow-xl">
+    
+    {/* Header */}
+    <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100/60">
+        <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-400"></div>
+            <div className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                Personal details
+            </div>
+        </div>
+        <button
+            onClick={() => setPersonalPopup(true)}
+            className="p-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 hover:from-indigo-50 hover:to-purple-50 transition-all duration-300 hover:shadow-sm border border-gray-200/60 hover:border-indigo-200/60 cursor-pointer"
+        >
+            <MdOutlineEdit className="text-gray-600 hover:text-indigo-600 transition-colors" />
+        </button>
+    </div>
 
-                             <p>This information is important for employers to know you better</p>
-                            
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-slate-500">Personal</span>
-                                    <p className="text-blue-500 font-medium flex gap-2">{personalObj.gender ? <span className="text-slate-700 flex items-center">{personalObj.gender}</span>:'Gender'} , {personalObj.maritalStatus ? <span className="text-slate-700 flex items-center">{personalObj.maritalStatus}</span>:'Marital Status'}, {personalObj.moreInfo ? <span className="text-slate-700 flex items-center">{personalObj.moreInfo.join(',')}</span>:'Add more info'}</p>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-slate-500">Date of Birth</span>
-                                    <p className="text-blue-500 font-medium">
-                                        {personalObj.dateofBirth ? <span className="text-slate-600">{formatDate(personalObj.dateofBirth)}</span>:'Add date of birth'}
-                                    </p>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-slate-500">Category</span>
-                                    <p className="text-blue-500 font-medium">{personalObj.category ? <span className="text-slate-700">{personalObj.category}</span>:'Add category'}</p>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-slate-500">Work permit</span>
-                                    <p className="text-blue-500 font-medium">Add work permit</p>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-slate-500">Address</span>
-                                    <p className="text-blue-500 font-medium">{personalObj.address ? <span className="text-slate-700">{personalObj.address}</span>:'Add address'}</p>
-                                </div>
+    {/* Description */}
+    <div className="mb-6 p-4 bg-gradient-to-r from-blue-50/50 to-cyan-50/50 rounded-xl border border-blue-100/50">
+        <p className="text-gray-600 text-sm leading-relaxed">
+            This information is important for employers to know you better
+        </p>
+    </div>
 
-                               {!personalObj.language.length && <div className="flex flex-col gap-1">
-                                    <span className="text-slate-500">Languages</span>
-                                    <p className="text-blue-500 font-medium">Add languages</p>
-                                </div>
-                               }
-                               
-                            </div>
+    {/* Personal Info Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* Personal */}
+        <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+            <div className="text-sm font-medium text-gray-500 mb-2">Personal</div>
+            <div className="flex flex-wrap gap-2">
+                <div className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-300/60">
+                    {personalObj.gender ? personalObj.gender : 'Gender'}
+                </div>
+                <div className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-300/60">
+                    {personalObj.maritalStatus ? personalObj.maritalStatus : 'Marital Status'}
+                </div>
+                {personalObj.moreInfo?.map((info: string, index: number) => (
+                    <div key={index} className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-full text-sm font-medium border border-gray-300/60">
+                        {info}
+                    </div>
+                ))}
+                {(!personalObj.moreInfo || personalObj.moreInfo.length === 0) && (
+                    <div className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-600 rounded-full text-sm font-medium border border-blue-200/60">
+                        Add more info
+                    </div>
+                )}
+            </div>
+        </div>
 
-                           
-                            <div className="mt-6">
-  <div className="flex justify-between items-center mb-4">
-    <span className="text-lg font-semibold text-gray-800">Languages</span>
-    <button className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition">
-      Add Languages
-    </button>
-  </div>
+        {/* Date of Birth */}
+        <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+            <div className="text-sm font-medium text-gray-500 mb-2">Date of Birth</div>
+            <div className={`px-4 py-2.5 rounded-lg border ${personalObj.dateofBirth ? 'border-gray-300/60 bg-white' : 'border-dashed border-blue-300/60 bg-gradient-to-r from-blue-50/50 to-cyan-50/50'}`}>
+                <span className={`font-medium ${personalObj.dateofBirth ? 'text-gray-800' : 'text-blue-600'}`}>
+                    {personalObj.dateofBirth ? formatDate(personalObj.dateofBirth) : 'Add date of birth'}
+                </span>
+            </div>
+        </div>
 
-  <div className="overflow-x-auto">
-    <table className="w-full border-collapse text-sm">
-      <thead>
-        <tr className="bg-gray-100 border-b border-gray-400 text-left">
-          <th className="py-3 px-4 font-semibold text-gray-700">Language</th>
-          <th className="py-3 px-4 font-semibold text-gray-700">Proficiency</th>
-          <th className="py-3 px-4 font-semibold text-gray-700">Read</th>
-          <th className="py-3 px-4 font-semibold text-gray-700">Write</th>
-          <th className="py-3 px-4 font-semibold text-gray-700">Speak</th>
-        </tr>
-      </thead>
+        {/* Category */}
+        <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+            <div className="text-sm font-medium text-gray-500 mb-2">Category</div>
+            <div className={`px-4 py-2.5 rounded-lg border ${personalObj.category ? 'border-gray-300/60 bg-white' : 'border-dashed border-green-300/60 bg-gradient-to-r from-green-50/50 to-emerald-50/50'}`}>
+                <span className={`font-medium ${personalObj.category ? 'text-gray-800' : 'text-green-600'}`}>
+                    {personalObj.category ? personalObj.category : 'Add category'}
+                </span>
+            </div>
+        </div>
 
-      <tbody>
-        {personalObj.language.map((eachObj: any, index: number) => (
-          <tr
-            key={index}
-            className="border-b border-gray-400 hover:bg-gray-50 transition"
-          >
-            <td className="py-2 px-4 text-gray-800">{eachObj.language}</td>
-            <td className="py-2 px-4 text-gray-800">{eachObj.proficiency}</td>
-            <td className="py-2 px-4">{eachObj.canRead ? <MdOutlineRadioButtonChecked /> :<RxCrossCircled />}</td>
-            <td className="py-2 px-4">{eachObj.canWrite ? <MdOutlineRadioButtonChecked /> : <RxCrossCircled />}</td>
-            <td className="py-2 px-4">{eachObj.canSpeak ? <MdOutlineRadioButtonChecked /> : <RxCrossCircled />}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-                            </div>
+        {/* Work Permit */}
+        <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+            <div className="text-sm font-medium text-gray-500 mb-2">Work permit</div>
+            <div className="px-4 py-2.5 rounded-lg border border-dashed border-orange-300/60 bg-gradient-to-r from-orange-50/50 to-amber-50/50">
+                <span className="font-medium text-orange-600">Add work permit</span>
+            </div>
+        </div>
 
-                         </div>
+        {/* Address */}
+        <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+            <div className="text-sm font-medium text-gray-500 mb-2">Address</div>
+            <div className={`px-4 py-2.5 rounded-lg border ${personalObj.address ? 'border-gray-300/60 bg-white' : 'border-dashed border-purple-300/60 bg-gradient-to-r from-purple-50/50 to-pink-50/50'}`}>
+                <span className={`font-medium ${personalObj.address ? 'text-gray-800' : 'text-purple-600'}`}>
+                    {personalObj.address ? personalObj.address : 'Add address'}
+                </span>
+            </div>
+        </div>
+
+        {/* Languages (if empty) */}
+        {!personalObj.language.length && (
+            <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+                <div className="text-sm font-medium text-gray-500 mb-2">Languages</div>
+                <div className="px-4 py-2.5 rounded-lg border border-dashed border-red-300/60 bg-gradient-to-r from-red-50/50 to-pink-50/50">
+                    <span className="font-medium text-red-600">Add languages</span>
+                </div>
+            </div>
+        )}
+    </div>
+
+    {/* Languages Table Section */}
+    {personalObj.language.length > 0 && (
+        <div className="mt-8">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-500 to-purple-400 flex items-center justify-center">
+                            <div className="text-white text-xs font-bold">L</div>
+                        </div>
+                    </div>
+                    <div className="text-lg font-semibold text-gray-900">Languages</div>
+                </div>
+           
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-gray-200/60 shadow-sm">
+                <table className="w-full border-collapse bg-white/80 backdrop-blur-sm">
+                    <thead>
+                        <tr className="bg-gradient-to-r from-gray-50 to-gray-100/80 border-b border-gray-200/60">
+                            <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Language</th>
+                            <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Proficiency</th>
+                            <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Read</th>
+                            <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Write</th>
+                            <th className="py-3 px-6 text-left text-sm font-semibold text-gray-700">Speak</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {personalObj.language.map((eachObj: any, index: number) => (
+                            <tr
+                                key={index}
+                                className="border-b border-gray-100/60 hover:bg-gradient-to-r hover:from-indigo-50/30 hover:to-purple-50/30 transition-all duration-300 group"
+                            >
+                                <td className="py-4 px-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50">
+                                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 flex items-center justify-center">
+                                                <span className="text-sm font-semibold text-indigo-600">
+                                                    {eachObj.language.charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span className="font-medium text-gray-800">{eachObj.language}</span>
+                                    </div>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <span className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 rounded-full text-sm font-medium text-gray-700 border border-gray-200/60">
+                                        {eachObj.proficiency}
+                                    </span>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <div className={`p-2 rounded-lg ${eachObj.canRead ? 'bg-gradient-to-r from-green-50 to-emerald-50' : 'bg-gradient-to-r from-red-50 to-pink-50'}`}>
+                                        {eachObj.canRead ? (
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-400"></div>
+                                                <span className="text-xs font-medium text-green-700">Yes</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-red-500 to-pink-400"></div>
+                                                <span className="text-xs font-medium text-red-700">No</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <div className={`p-2 rounded-lg ${eachObj.canWrite ? 'bg-gradient-to-r from-green-50 to-emerald-50' : 'bg-gradient-to-r from-red-50 to-pink-50'}`}>
+                                        {eachObj.canWrite ? (
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-400"></div>
+                                                <span className="text-xs font-medium text-green-700">Yes</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-red-500 to-pink-400"></div>
+                                                <span className="text-xs font-medium text-red-700">No</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="py-4 px-6">
+                                    <div className={`p-2 rounded-lg ${eachObj.canSpeak ? 'bg-gradient-to-r from-green-50 to-emerald-50' : 'bg-gradient-to-r from-red-50 to-pink-50'}`}>
+                                        {eachObj.canSpeak ? (
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-400"></div>
+                                                <span className="text-xs font-medium text-green-700">Yes</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-red-500 to-pink-400"></div>
+                                                <span className="text-xs font-medium text-red-700">No</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Language Stats */}
+            <div className="mt-6 grid grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 rounded-xl border border-indigo-100/50">
+                    <div className="text-2xl font-bold text-indigo-600">{personalObj.language.length}</div>
+                    <div className="text-sm text-gray-600 mt-1">Total Languages</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-green-50/50 to-emerald-50/50 rounded-xl border border-green-100/50">
+                    <div className="text-2xl font-bold text-green-600">
+                        {personalObj.language.filter((lang: any) => lang.canSpeak).length}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Can Speak</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-blue-50/50 to-cyan-50/50 rounded-xl border border-blue-100/50">
+                    <div className="text-2xl font-bold text-blue-600">
+                        {personalObj.language.filter((lang: any) => lang.canRead && lang.canWrite).length}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">Fluent</div>
+                </div>
+            </div>
+        </div>
+    )}
+</div>
 
 
 
                          {/* Diversity inclusion */}
-                         <div className="px-4 pb-4 flex flex-col gap-4 bg-white rounded-2xl">
-                             <div className=" flex pr-5 justify-end">
-                                <span className="text-purple-400 bg-purple-300 rounded-b-2xl px-2 text-sm">New</span>    
-                             </div>
+                         <div className="p-6 bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-sm border border-gray-200/80 rounded-2xl shadow-lg relative overflow-hidden">
+    
+    {/* New Badge */}
+    <div className="absolute top-0 right-0 pr-4">
+        <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold px-3 py-1.5 rounded-bl-lg shadow-sm">
+            New
+        </span>
+    </div>
 
-                             <div>
-                                <div className="flex gap-4 items-center">
-                                    <span className="font-medium">Diversity & inclusion</span>
-                                    <MdOutlineEdit onClick={()=> setDisabilityPopup(true)}  className="text-slate-500 cursor-pointer"/>
+    {/* Header */}
+    <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-400"></div>
+            <div className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                Diversity & inclusion
+            </div>
+        </div>
+        <button
+            onClick={() => setDisabilityPopup(true)}
+            className="p-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 hover:from-purple-50 hover:to-pink-50 transition-all duration-300 hover:shadow-sm border border-gray-200/60 hover:border-purple-200/60 cursor-pointer"
+        >
+            <MdOutlineEdit className="text-gray-600 hover:text-purple-600 transition-colors" />
+        </button>
+    </div>
+
+    {/* Description */}
+    <div className="mb-6 p-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-xl border border-purple-100/50">
+        <p className="text-gray-600 text-sm leading-relaxed">
+            Share details to attract recruiters who value people from different backgrounds
+        </p>
+    </div>
+
+    {/* Content */}
+    <div className="space-y-6">
+        {/* Disability Status */}
+        <div>
+            {disability ? (
+                <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-500">Disability status</span>
+                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-400"></div>
+                    </div>
+                    <span className="text-gray-800 font-medium text-lg">
+                        {disability === 'true' ? "I have a disability" : "Do not have disability"}
+                    </span>
+                </div>
+            ) : (
+                <button
+                    onClick={() => setDisabilityPopup(true)}
+                    className="w-full p-4 rounded-xl border-2 border-dashed border-blue-300/60 bg-gradient-to-r from-blue-50/30 to-cyan-50/30 hover:from-blue-50/50 hover:to-cyan-50/50 transition-all duration-300 hover:shadow-sm cursor-pointer text-left group"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-white">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 flex items-center justify-center">
+                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"></div>
                                 </div>
-                                <p className="text-slate-500 mt-3">Share details to attract recruiters who value people from different backgrounds</p>
+                            </div>
+                            <span className="text-blue-600 font-medium group-hover:text-blue-700 transition-colors">
+                                Add disability status
+                            </span>
+                        </div>
+                        <div className="p-1.5 rounded-lg bg-white group-hover:bg-blue-50 transition-colors">
+                            <div className="w-4 h-4 rounded-full border-2 border-dashed border-blue-400"></div>
+                        </div>
+                    </div>
+                </button>
+            )}
+        </div>
 
-
-                                <div className="flex flex-col gap-5 mt-4">
-                                    {/* Disability */}
-                                    {disability &&  <div className="flex flex-col gap-1">
-                                        <span className="text-slate-400 text-sm">Disability status</span>
-                                        <span className="text-slate-600 font-medium text-md">{disability==='true' ? "I have a disability":"Do not have disability"}</span>
-
-                                    </div>}
-                                    
-                                    {!disability &&   <span onClick={()=> setDisabilityPopup(true)} className="text-blue-500 font-medium cursor-pointer">Add disability status</span>}
-
- 
-                                    {/* MilitaryExperience */}
-                                    {military &&  <div className="flex flex-col gap-1">
-                                        <span className="text-slate-400 text-sm">Military Experience</span>
-                                        <span className="text-slate-600 font-medium text-md">{military}</span>
-
-                                    </div>}
-                                  
-                                  {!military && <span  onClick={()=> setDisabilityPopup(true)} className="text-blue-500 font-medium cursor-pointer">Add military experience</span>}
-
-
-                                  {/* CareerBreak */}
-                                  {careerBreak &&  <div className="flex flex-col gap-1">
-                                        <span className="text-slate-400 text-sm">Career Break</span>
-                                        <span className="text-slate-600 font-medium text-md">{careerBreak}</span>
-
-                                    </div>}
-                                    
-                                    {!careerBreak && <span  onClick={()=> setDisabilityPopup(true)} className="text-blue-500 font-medium cursor-pointer">Add career break</span>}
-                                    
+        {/* Military Experience */}
+        <div>
+            {military ? (
+                <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-500">Military Experience</span>
+                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+                    </div>
+                    <span className="text-gray-800 font-medium text-lg">{military}</span>
+                </div>
+            ) : (
+                <button
+                    onClick={() => setDisabilityPopup(true)}
+                    className="w-full p-4 rounded-xl border-2 border-dashed border-indigo-300/60 bg-gradient-to-r from-indigo-50/30 to-purple-50/30 hover:from-indigo-50/50 hover:to-purple-50/50 transition-all duration-300 hover:shadow-sm cursor-pointer text-left group"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-white">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 flex items-center justify-center">
+                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-400"></div>
                                 </div>
-                             </div>
+                            </div>
+                            <span className="text-indigo-600 font-medium group-hover:text-indigo-700 transition-colors">
+                                Add military experience
+                            </span>
+                        </div>
+                        <div className="p-1.5 rounded-lg bg-white group-hover:bg-indigo-50 transition-colors">
+                            <div className="w-4 h-4 rounded-full border-2 border-dashed border-indigo-400"></div>
+                        </div>
+                    </div>
+                </button>
+            )}
+        </div>
 
-                             
-                         </div>
+        {/* Career Break */}
+        <div>
+            {careerBreak ? (
+                <div className="p-4 bg-gradient-to-br from-white to-gray-50/50 rounded-xl border border-gray-200/60">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-500">Career Break</span>
+                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-500 to-amber-400"></div>
+                    </div>
+                    <span className="text-gray-800 font-medium text-lg">{careerBreak}</span>
+                </div>
+            ) : (
+                <button
+                    onClick={() => setDisabilityPopup(true)}
+                    className="w-full p-4 rounded-xl border-2 border-dashed border-green-300/60 bg-gradient-to-r from-green-50/30 to-emerald-50/30 hover:from-green-50/50 hover:to-emerald-50/50 transition-all duration-300 hover:shadow-sm cursor-pointer text-left group"
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-white">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center">
+                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-400"></div>
+                                </div>
+                            </div>
+                            <span className="text-green-600 font-medium group-hover:text-green-700 transition-colors">
+                                Add career break
+                            </span>
+                        </div>
+                        <div className="p-1.5 rounded-lg bg-white group-hover:bg-green-50 transition-colors">
+                            <div className="w-4 h-4 rounded-full border-2 border-dashed border-green-400"></div>
+                        </div>
+                    </div>
+                </button>
+            )}
+        </div>
+    </div>
+
+    {/* Stats Summary */}
+    {(disability || military || careerBreak) && (
+        <div className="mt-6 pt-4 border-t border-gray-100/60">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="text-xs text-gray-500">Profile completeness</div>
+                    <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full bg-gradient-to-r from-purple-500 to-pink-400 rounded-full"
+                            style={{ 
+                                width: `${((disability ? 1 : 0) + (military ? 1 : 0) + (careerBreak ? 1 : 0)) / 3 * 100}%` 
+                            }}
+                        ></div>
+                    </div>
+                </div>
+                <div className="text-xs text-gray-500">
+                    {((disability ? 1 : 0) + (military ? 1 : 0) + (careerBreak ? 1 : 0))}/3 sections complete
+                </div>
+            </div>
+        </div>
+    )}
+</div>
 
                          {DisabilityPopup && <Diversity_Inclusion disability={disability} setDisabilityPopup={setDisabilityPopup}/>}
 
@@ -1377,289 +1614,376 @@ const formatted = new Date(isoString).toLocaleDateString("en-GB", options);
   return `${parts[0]} ${parts[1]}, ${parts[2]}`;
 }
 
-function ProfileCard({reloadDetails,profilePic,setEditUser,name,email,phone,city,exp,updated,verify,availability}:any) {
-    const [showVerifyEmail,setShowEmail]  = useState(false)
+
+import {
+  
+  FiMapPin,
+  FiMail,
+  FiPhone,
+  FiBriefcase,
+  FiCalendar,
+  FiCheckCircle
+} from "react-icons/fi";
+import {
+  
+  MdVerified,
+  MdUpload
+} from "react-icons/md";
 
 
-    const fileRef = useRef<HTMLInputElement | null>(null);
-    const [preview,setPreview] = useState<string | null>(null)
 
-    const MAX_SIZE = 2 * 1024 * 1024; // 2MB
-    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+function ProfileCard({
+  reloadDetails,
+  profilePic,
+  setEditUser,
+  name,
+  email,
+  phone,
+  city,
+  exp,
+  updated,
+  verify,
+  availability
+}: any) {
+  const [showVerifyEmail, setShowEmail] = useState(false);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imageResLoader, setImageResLoader] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [message, setMessage] = useState('');
+  
+  const MAX_SIZE = 2 * 1024 * 1024;
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
+  async function handleImageChange(e: any) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    const [imageResLoader,setImageResLoader] = useState(false)
-    const [showPopup,setShowPopup] = useState(false)
-    const [message,setMessage] = useState('')
-    
-    async function handleImageChange(e:any){
-          const file = e.target.files[0];
-          if(!file) return ;
-
-          // 🔍 Type check
-          if (!ALLOWED_TYPES.includes(file.type)) {
-            alert("Only JPG, PNG or WEBP images are allowed");
-            e.target.value = "";
-            return;
-          }
-
-          // 📏 Size check
-          if (file.size > MAX_SIZE) {
-            alert("Image size must be less than 2MB");
-            e.target.value = "";
-            return;
-          }
-
-          setImageResLoader(true)
-          // Preview
-          setPreview(URL.createObjectURL(file));
-          
-
-          try{
-              const formData = new FormData();
-              formData.append("profile",file);
-
-            const getting_DeleteRes =  await axios({
-                url:'https://jobportalbackend-whpt.onrender.com/user/uploadImage',
-                method:'POST',
-                headers:{
-                  Authorization:`Bearer ${localStorage.getItem('token')}`
-                },
-                data:formData
-              })
-
-              if(getting_DeleteRes.data && getting_DeleteRes.data.ok){
-                setShowPopup(true)
-                setMessage("Image upload successfully!!")
-                reloadDetails()
-              }
-          }
-          catch(err:any){
-              console.error(err);
-              if (err.response?.data?.msg) {
-                setShowPopup(true)
-                  setMessage(err.response.data.msg);
-                } else if (err.message) {
-                  setShowPopup(true)
-                  setMessage(err.message);
-                } else {
-                  setShowPopup(true)
-                  setMessage("Something went wrong. Please try again.");
-                }
-          }
-          finally{
-            setImageResLoader(false)
-          }
-
-         
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setMessage("Only JPG, PNG or WEBP images are allowed");
+      setShowPopup(true);
+      e.target.value = "";
+      return;
     }
 
-    async function handleRemoveImage(){
-
-      setImageResLoader(true)
-      try{
-         const removeReq = await axios({
-          url:'https://jobportalbackend-whpt.onrender.com/user/removeProfilePic',
-          headers:{
-            Authorization:`Bearer ${localStorage.getItem('token')}`
-          },
-          method:'DELETE'
-         })
-
-         if(removeReq.data && removeReq.data.ok){
-          setMessage("Profile Pic Removed Successfully.")
-          setShowPopup(true)
-          reloadDetails()
-         }
-      }
-      catch(err:any){
-            console.error(err);
-              if (err.response?.data?.msg) {
-                setShowPopup(true)
-                  setMessage(err.response.data.msg);
-                } else if (err.message) {
-                  setShowPopup(true)
-                  setMessage(err.message);
-                } else {
-                  setShowPopup(true)
-                  setMessage("Something went wrong. Please try again.");
-                }
-      }
-      finally{
-        setImageResLoader(false)
-      }
+    if (file.size > MAX_SIZE) {
+      setMessage("Image size must be less than 2MB");
+      setShowPopup(true);
+      e.target.value = "";
+      return;
     }
+
+    setImageResLoader(true);
+    setPreview(URL.createObjectURL(file));
+
+    try {
+      const formData = new FormData();
+      formData.append("profile", file);
+
+      const response = await axios({
+        url: 'https://jobportalbackend-whpt.onrender.com/user/uploadImage',
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        data: formData
+      });
+
+      if (response.data && response.data.ok) {
+        setMessage("Image uploaded successfully!");
+        setShowPopup(true);
+        reloadDetails();
+      }
+    } catch (err: any) {
+      console.error(err);
+      setMessage(
+        err.response?.data?.msg || 
+        err.message || 
+        "Something went wrong. Please try again."
+      );
+      setShowPopup(true);
+    } finally {
+      setImageResLoader(false);
+    }
+  }
+
+  async function handleRemoveImage() {
+    setImageResLoader(true);
+    try {
+      const removeReq = await axios({
+        url: 'https://jobportalbackend-whpt.onrender.com/user/removeProfilePic',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        method: 'DELETE'
+      });
+
+      if (removeReq.data && removeReq.data.ok) {
+        setMessage("Profile picture removed successfully");
+        setShowPopup(true);
+        reloadDetails();
+      }
+    } catch (err: any) {
+      console.error(err);
+      setMessage(
+        err.response?.data?.msg || 
+        err.message || 
+        "Something went wrong. Please try again."
+      );
+      setShowPopup(true);
+    } finally {
+      setImageResLoader(false);
+    }
+  }
+
+  // Profile completion items
+  const profileItems = [
+    {
+      id: 1,
+      title: "Verify Email",
+      icon: <FiMail className="text-blue-500" />,
+      completed: verify === 'Verified',
+      score: 20
+    },
+    {
+      id: 2,
+      title: "Add Preferred Location",
+      icon: <FiMapPin className="text-green-500" />,
+      completed: !!city,
+      score: 15
+    },
+    {
+      id: 3,
+      title: "Upload Resume",
+      icon: <LuClipboardCopy className="text-purple-500" />,
+      completed: false, // Add logic based on your data
+      score: 25
+    },
+    {
+      id: 4,
+      title: "Add Work Experience",
+      icon: <FiBriefcase className="text-orange-500" />,
+      completed: !!exp,
+      score: 20
+    },
+    {
+      id: 5,
+      title: "Set Availability",
+      icon: <FiCalendar className="text-pink-500" />,
+      completed: !!availability,
+      score: 20
+    }
+  ];
+
+  const totalScore = profileItems.reduce((sum, item) => 
+    item.completed ? sum + item.score : sum, 0
+  );
+
   return (
-    <div className="bg-white shadow-md border border-gray-200 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 w-full max-w-6xl mx-auto ">
-
-      {/* showing popup */}
-
-       <TopPopup
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-100 p-8 w-full max-w-6xl mx-auto">
+      {/* Popup Notification */}
+      <TopPopup
         show={showPopup}
-        text={message || "Profile Updated Successfully ✅"}
-        bg="bg-blue-600"
+        text={message}
+        bg="bg-gradient-to-r from-blue-600 to-cyan-500"
         duration={2500}
         onClose={() => setShowPopup(false)}
       />
-       {/* left part */}
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Profile Image & Basic Info */}
+        <div className="lg:col-span-2">
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* Profile Image Section */}
+            <div className="flex-shrink-0">
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 to-cyan-300 rounded-3xl opacity-20 blur-xl group-hover:opacity-30 transition-opacity"></div>
+                
+                <div className="relative">
+                  {preview || profilePic ? (
+                    <div className="relative">
+                      <div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-white shadow-2xl">
+                        <img
+                          src={preview || profilePic}
+                          alt="Profile"
+                          className={`w-full h-full object-cover transition-all duration-300 ${
+                            imageResLoader ? "blur-md scale-95" : "group-hover:scale-105"
+                          }`}
+                        />
+                      </div>
+                      
+                      {/* Image Loader */}
+                      {imageResLoader && (
+                        <div className="absolute inset-0 bg-black/20 rounded-2xl flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                        </div>
+                      )}
 
-       <div className="flex w-[70%] items-center">
-        {/* UserProfilPicture */}
-        <div className="relative">
-      {preview ? (
-        <div className="relative  w-[200px] h-[200px]">
-          <img
-          src={preview}
-          alt="profile"
-          
-          className={`w-full h-full bg-gray-100 rounded-full object-contain cursor-pointer transition 
-          ${imageResLoader ? "blur-sm opacity-70 pointer-events-none" : ""}`}
-              onClick={() => {
-                if (!imageResLoader) {
-                  fileRef.current?.click();
-                }
-              }}
-          
-            />
-
-      {/* Loader Overlay */}
-      {imageResLoader && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/20">
-          <Spinner />
-        </div>
-      )}
-        
-</div>
-        
-      ) : ( profilePic ?
-        <div className="relative">
-          <img
-          src={profilePic}
-          alt="profile"
-          
-          className={`w-full h-full rounded-full object-cover cursor-pointer transition 
-          ${imageResLoader ? "blur-sm opacity-70 pointer-events-none" : ""}`}
-              
-          onClick={() => {fileRef.current?.click();}}
-          
-            />
-            <MdDeleteOutline
-            onClick={()=>{
-              if(!imageResLoader)
-                {
-                  handleRemoveImage()
-                }
-              }}
-            
-            title="remove image"  className="absolute hover:text-red-600 cursor-pointer text-xl inset-0 flex items-center justify-center rounded-full "/>
-
-            {/* Loader Overlay */}
-            {imageResLoader && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/20">
-                <Spinner />
+                      {/* Action Buttons */}
+                      <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 flex gap-2">
+                        <button
+                          onClick={() => fileRef.current?.click()}
+                          disabled={imageResLoader}
+                          className="px-4 py-2 bg-white shadow-lg rounded-full text-gray-700 font-medium hover:bg-gray-50 hover:shadow-xl transition-all disabled:opacity-50 flex items-center gap-2"
+                        >
+                          <MdUpload className="text-lg" />
+                          Update
+                        </button>
+                        
+                        {profilePic && !imageResLoader && (
+                          <button
+                            onClick={handleRemoveImage}
+                            className="px-4 py-2 bg-gradient-to-r from-red-50 to-pink-50 text-red-600 shadow-lg rounded-full font-medium hover:bg-red-100 transition-all flex items-center gap-2"
+                          >
+                            <MdDeleteOutline className="text-lg" />
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div 
+                      onClick={() => fileRef.current?.click()}
+                      className="w-48 h-48 rounded-2xl border-4 border-dashed border-gray-300 hover:border-blue-400 bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center cursor-pointer transition-all group-hover:scale-105"
+                    >
+                      <FaUserCircle className="text-gray-400 text-6xl mb-2" />
+                      <span className="text-gray-500 font-medium">Upload Photo</span>
+                      <span className="text-gray-400 text-sm">JPG, PNG, WEBP up to 2MB</span>
+                    </div>
+                  )}
+                  
+                  {/* Hidden file input */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileRef}
+                    hidden
+                    onChange={handleImageChange}
+                  />
+                </div>
               </div>
-            )}
-            </div>
-        :
-        <FaUserCircle
-          className="text-slate-400 w-[200px] h-[200px] hover:text-black/50 cursor-pointer"
-          onClick={() => fileRef.current?.click()}
-        />
-      )}
-
-      {/* Hidden file input */}
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileRef}
-        hidden
-        onChange={handleImageChange}
-      />
-    </div>
-
-        <div className=" w-full p-3 flex-col flex gap-3">
-            {/* Name */}
-            <div>
-                <span className="flex items-center text-xl font-semibold gap-7">{name?.toUpperCase()} <FiEdit2 
-                onClick={()=> setEditUser(true)}
-                className="text-lg cursor-pointer text-slate-500"/></span>
-                <span>Profile last updated - {updated}</span>
             </div>
 
-            <div className="border-t w-full text-slate-200">
+            {/* Profile Details */}
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                      {name?.toUpperCase()}
+                    </h1>
+                    <button
+                      onClick={() => setEditUser(true)}
+                      className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                      <FiEdit2 className="text-gray-600 hover:text-blue-600" />
+                    </button>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-500 mb-6">
+                    <LucideAlertCircle className="text-sm" />
+                    <span className="text-sm">Profile last updated - {updated}</span>
+                  </div>
+                </div>
+              </div>
 
-            </div>
+              {/* Details Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Column 1 */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <FiMapPin className="text-blue-600 text-xl" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Location</div>
+                      <div className="font-medium text-gray-900">{city || "Not specified"}</div>
+                    </div>
+                  </div>
 
-            <div className="flex items-center justify-between p-4 ">
-                {/* city part */}
-                <div className="flex flex-col gap-3">
-                    <span className="text-slate-700 flex items-center gap-3"><CiLocationOn />{city}</span>
-                    <span className="text-slate-700 flex items-center gap-3"><TiShoppingBag /> {exp[0]?.toUpperCase() + exp?.slice(1).toLowerCase()}</span>
-                    <span className="text-slate-700 flex items-center gap-3"><PiShoppingBagOpenLight />{availability || 'Add availabiltiy to join' }</span>
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <FiBriefcase className="text-green-600 text-xl" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Experience</div>
+                      <div className="font-medium text-gray-900">
+                        {exp?.[0]?.toUpperCase() + exp?.slice(1).toLowerCase() + ' yrs' || "Add experience"}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="w-px bg-gray-300 h-20"></div>
+                {/* Column 2 */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <PiShoppingBagOpenLight className="text-purple-600 text-xl" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Availability</div>
+                      <div className="font-medium text-gray-900">
+                        {availability || 'Add availability'}
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="flex flex-col gap-3">
-                    <span className="flex gap-2 items-center text-slate-700"><FaPhone/>{phone}</span>
-                    <span className="flex gap-2 items-center text-slate-700"><MdOutlineEmail /> {email} {verify==='Verified' ? <svg 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="12" cy="12" r="10" fill="#10b981"/>
-                    <path 
-                      d="M8 12L11 15L16 9" 
-                      stroke="white" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    /></svg>:<span className="text-blue-500 font-medium hover:text-blue-600 cursor-pointer"
-                    onClick={()=> setShowEmail(true)}
-                    >Verify</span>} </span>
+                  <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <FiPhone className="text-orange-600 text-xl" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Phone</div>
+                      <div className="font-medium text-gray-900">{phone || "Add phone"}</div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              {/* Email Section with Verification */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <FiMail className="text-gray-600 text-xl" />
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-500">Email Address</div>
+                      <div className="font-medium text-gray-900">{email}</div>
+                    </div>
+                  </div>
+                  
+                  {verify === 'Verified' ? (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full">
+                      <MdVerified className="text-lg" />
+                      <span className="font-medium text-sm">Verified</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowEmail(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:shadow-lg transition-all hover:-translate-y-0.5 font-medium flex items-center gap-2"
+                    >
+                      Verify Email
+                      <FiCheckCircle className="text-lg" />
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-       </div>
 
-       <div className="w-[30%] bg-orange-100 gap-3 flex-col flex rounded-xl p-5">
-               <div className="flex justify-between">
-                    <div className="flex gap-3  items-center">
-                        <MdOutlineEmail className="text-xl text-slate-500"/>
-                        <span className="text-gray-600">Verify email</span>
-                    </div>
+        {/* Right Column - Profile Completion */}
+        
+      </div>
 
-                    <span className="text-green-400 rounded-full w-10 flex justify-center items-center bg-white">5%</span>
-                    </div>
-               <div className="flex justify-between">
-                 <div className="flex gap-3 items-center">
-                        <CiLocationOn className="text-xl  text-slate-500"/>
-                        <span className="text-gray-600">Add prefered location</span>
-                    </div>
-
-                    <span className="text-green-400 rounded-full w-10 flex justify-center items-center bg-white">2%</span>
-               </div>
-               <div className="flex justify-between">
-                 <div className="flex gap-3  items-center">
-                        <LuClipboardCopy className="text-xl  text-slate-500"/>
-                        <span className="text-gray-600">Add resume</span>
-                    </div>
-
-                    <span className="text-green-400 rounded-full w-10 flex justify-center items-center bg-white">10%</span>
-               </div>
-
-               <div className="flex justify-center">
-                <button className="bg-orange-600 rounded-full text-white px-4 py-2 font-semibold">Add 12 missing details</button>
-               </div>
-       </div>
-
-        {showVerifyEmail && <VerifyGmail onClose={()=> setShowEmail(false)}/>}
+      {/* Verify Email Modal */}
+      {showVerifyEmail && <VerifyGmail onClose={() => setShowEmail(false)} />}
     </div>
   );
 }
+
+
 
 function VerifyGmail({ onClose }: any) {
 
@@ -1758,124 +2082,273 @@ function VerifyGmail({ onClose }: any) {
 }
 
 
-function QuickLinks(){
 
-    function scrolltoId(id:any){
-       const element = document.getElementById(id);
-       if(element){
-        element.scrollIntoView({
-            behavior:'smooth',
-            block:'start'
-        })
-       }
+import { FiChevronRight, FiUpload, FiEdit, FiPlus } from "react-icons/fi";
+
+
+function QuickLinks() {
+    const [activeLink, setActiveLink] = useState<string | null>(null);
+
+    function scrollToId(id: string) {
+        const element = document.getElementById(id);
+        if (element) {
+            setActiveLink(id);
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            setTimeout(() => {
+                setActiveLink(null);
+            }, 2000);
+        }
     }
+
+    const links = [
+        { id: 'Resume', label: 'Resume', action: 'Upload', color: 'blue' },
+        { id: 'Headline', label: 'Resume headline', action: null, color: 'purple' },
+        { id: 'KeySkills', label: 'Key skills', action: 'Add', color: 'green' },
+        { id: 'Education', label: 'Education', action: 'Add', color: 'indigo' },
+        { id: 'ITSkills', label: 'IT skills', action: 'Add', color: 'orange' },
+        { id: 'Projects', label: 'Projects', action: 'Add', color: 'red' },
+        { id: 'Summary', label: 'Profile summary', action: 'Add', color: 'cyan' },
+        { id: 'CareerProfile', label: 'Career profile', action: null, color: 'amber' },
+        { id: 'PersonalDetails', label: 'Personal details', action: null, color: 'pink' }
+    ];
+
+    const colorClasses: { [key: string]: string } = {
+        blue: 'bg-blue-100 text-blue-600 hover:bg-blue-200 border-blue-200',
+        purple: 'bg-purple-100 text-purple-600 hover:bg-purple-200 border-purple-200',
+        green: 'bg-green-100 text-green-600 hover:bg-green-200 border-green-200',
+        indigo: 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200 border-indigo-200',
+        orange: 'bg-orange-100 text-orange-600 hover:bg-orange-200 border-orange-200',
+        red: 'bg-red-100 text-red-600 hover:bg-red-200 border-red-200',
+        cyan: 'bg-cyan-100 text-cyan-600 hover:bg-cyan-200 border-cyan-200',
+        amber: 'bg-amber-100 text-amber-600 hover:bg-amber-200 border-amber-200',
+        pink: 'bg-pink-100 text-pink-600 hover:bg-pink-200 border-pink-200'
+    };
+
     return (
-        <div className="border max-h-[550px] sticky rounded-xl p-5 w-[30%] border-gray-300 bg-white flex flex-col gap-5">
-            <div className="flex justify-start font-medium">
-                <h1 className="text-xl">Quick Links</h1>
+        <div className="sticky top-6 h-fit rounded-2xl bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-sm border border-gray-200/80 shadow-lg p-6 w-full max-w-sm">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                    Quick Links
+                </h1>
+                <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500/10 to-cyan-500/10">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                </div>
             </div> 
 
-            <div className="flex flex-col gap-1">
-                <div className="flex hover:bg-gray-50 p-2 rounded-full hover:font-medium justify-between items-center">
-                    <a onClick={(e)=>{
-                         e.preventDefault()
-                        scrolltoId('Resume')
-                    }} className="cursor-pointer">Resume</a>
-                    <span className="text-blue-500 font-medium">Upload</span>
-                </div>
-                <div onClick={()=>scrolltoId('Headline')} className="flex hover:bg-gray-50 p-2 rounded-fullcursor-pointer justify-between items-center hover:font-medium">
-                    <span>Resume headline</span>
-                    
-                </div>
-                <div className="flex justify-between hover:bg-gray-50 p-2 hover:font-medium rounded-full items-center">
-                    <span onClick={()=>scrolltoId('KeySkills')} className="cursor-pointer">Key skills</span>
-                    <span className="text-blue-500 font-medium">Add</span>
-                </div>
-                <div className="flex justify-between hover:bg-gray-50 p-2 hover:font-medium rounded-full items-center">
-                    <span onClick={()=>scrolltoId('Education')} className="cursor-pointer">Education</span>
-                    <span className="text-blue-500 font-medium">Add</span>
-                </div>
-                <div className="flex justify-between hover:bg-gray-50 p-2 hover:font-medium rounded-full items-center">
-                    <span onClick={()=>scrolltoId('KeySkills')} className="cursor-pointer">IT skills</span>
-                    <span className="text-blue-500 font-medium">Add</span>
-                </div>
-                <div className="flex justify-between hover:bg-gray-50 p-2 hover:font-medium rounded-full items-center">
-                    <span onClick={()=>scrolltoId('Projects')} className="cursor-pointer">Projects</span>
-                    <span className="text-blue-500 font-medium">Add</span>
-                </div>
-                <div className="flex justify-between hover:bg-gray-50 p-2 hover:font-medium rounded-full items-center">
-                    <span onClick={()=>scrolltoId('Summary')} className="cursor-pointer">Profile summary</span>
-                    <span className="text-blue-500 font-medium">Add</span>
-                </div>
-
-                {/* <div onClick={()=>scrolltoId('Accomplishments')} className="flex hover:font-medium hover:bg-gray-50 p-2 rounded-full justify-start cursor-pointer">Accomplishments</div> */}
-                <div onClick={()=>scrolltoId('CareerProfile')} className="flex hover:font-medium hover:bg-gray-50 p-2 rounded-full cursor-pointer justify-start">Career profile</div>
-                <div onClick={()=>scrolltoId('PersonalDetails')} className="flex  hover:bg-gray-50 p-2 rounded-full hover:font-medium cursor-pointer justify-start">Personal details</div>
+            {/* Links List */}
+            <div className="space-y-2">
+                {links.map((link) => (
+                    <div 
+                        key={link.id}
+                        className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 cursor-pointer ${
+                            activeLink === link.id 
+                                ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 shadow-md transform scale-[1.02]' 
+                                : 'hover:bg-gray-50/80 hover:shadow-sm border border-transparent hover:border-gray-100'
+                        }`}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            scrollToId(link.id);
+                        }}
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className={`w-2 h-2 rounded-full bg-gradient-to-r from-${link.color}-500 to-${link.color}-400`}></div>
+                            <span className={`font-medium ${activeLink === link.id ? 'text-gray-900' : 'text-gray-700'}`}>
+                                {link.label}
+                            </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                            {link.action && (
+                                <span className={`text-sm font-medium px-2.5 py-1 rounded-full ${colorClasses[link.color]} transition-colors`}>
+                                    {link.action === 'Upload' ? (
+                                        <FiUpload className="inline mr-1 text-sm" />
+                                    ) : (
+                                        <FiPlus className="inline mr-1 text-sm" />
+                                    )}
+                                    {link.action}
+                                </span>
+                            )}
+                            <div className={`p-1.5 rounded-lg transition-all ${activeLink === link.id ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                <FiChevronRight className={`text-sm ${activeLink === link.id ? 'rotate-90' : ''} transition-transform`} />
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
-                 
+
+            {/* Divider */}
+            <div className="my-6 border-t border-gray-100"></div>
+
+          
+
+            {/* Quick Tip */}
+            <div className="mt-6 p-3 bg-gradient-to-r from-blue-50/50 to-cyan-50/50 rounded-lg border border-blue-100/50">
+                <p className="text-xs text-gray-600 text-center">
+                    Complete profile for <span className="font-semibold text-blue-600">5x more visibility</span>
+                </p>
+            </div>
         </div>
-    )
+    );
 }
 
-function Disability_Banner({setShowDisability}:any){
-    const [loading,setLoading] = useState(false);
-    const [disability,setDisability] = useState('');
-    async function Disability(){
+
+
+function Disability_Banner({ setShowDisability }: any) {
+    const [loading, setLoading] = useState(false);
+    const [disability, setDisability] = useState('');
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+    async function Disability() {
         setLoading(true)
-        try{
-          const Posting = await axios({
-            url:"https://jobportalbackend-whpt.onrender.com/user/disability",
-            data:{
-               disability:disability,
-               email:localStorage.getItem('email')
-            },
-            method:'POST',
-            
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem('token') || ""}`
+        try {
+            const Posting = await axios({
+                url: "https://jobportalbackend-whpt.onrender.com/user/disability",
+                data: {
+                    disability: disability,
+                    email: localStorage.getItem('email')
+                },
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token") || ""}`
                 }
-          })
-           
-          if(Posting.data && Posting.data.ok){
-               setShowDisability(false)
-          }
+            })
 
-
+            if (Posting.data && Posting.data.ok) {
+                setShowDisability(false)
+            }
         }
-        catch(err){
+        catch (err) {
             console.log(err);
         }
-        finally{
+        finally {
             setLoading(false)
         }
     }
-    
+
     return (
-        <div className="max-w-4xl w-full  pb-5 bg-white flex flex-col rounded-3xl">
+        <div className="max-w-2xl w-full bg-gradient-to-br from-white to-gray-50/80 backdrop-blur-sm border border-gray-200/80 shadow-2xl rounded-3xl p-6 relative overflow-hidden">
+            
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100/30 to-blue-100/30 rounded-full -translate-y-16 translate-x-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-50/20 to-pink-50/20 rounded-full translate-y-12 -translate-x-8"></div>
+            
+            {/* Header Badge */}
+            <div className="flex justify-end mb-4">
+                <span className="bg-gradient-to-r from-purple-100 to-purple-50 text-purple-600 text-xs font-semibold px-4 py-2 rounded-full border border-purple-200/60 shadow-sm">
+                    Diversity & inclusion
+                </span>
+            </div>
 
-           <div className="flex justify-end  pr-5">
-            <span className="bg-purple-200 text-xs p-2 rounded-b-2xl text-purple-400">Diversity & inclusion</span>
-           </div>
+            {/* Main Content */}
+            <div className="relative z-10">
+                {/* Title */}
+                <div className="text-xl font-semibold text-gray-900 mb-6 leading-relaxed">
+                    Companies want to build inclusive teams, help us identify your disability status for better jobs.
+                </div>
 
-           <div className="text-xl font-semibold px-5 mt-2">
-            Companies want to build inclusive teams, help us identify your disability status for better jobs.
-           </div>
+                {/* Options */}
+                <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                    <div
+                        onClick={() => {
+                            setDisability('true');
+                            setSelectedOption('true');
+                        }}
+                        className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5 ${
+                            selectedOption === 'true'
+                                ? 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 shadow-md'
+                                : 'border-gray-200 hover:border-purple-200 hover:bg-gray-50/50'
+                        }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className={`font-medium ${
+                                selectedOption === 'true' ? 'text-purple-700' : 'text-gray-700'
+                            }`}>
+                                I have a disability
+                            </span>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                selectedOption === 'true'
+                                    ? 'border-purple-500 bg-gradient-to-r from-purple-500 to-purple-400'
+                                    : 'border-gray-300'
+                            }`}>
+                                {selectedOption === 'true' && (
+                                    <div className="w-2 h-2 rounded-full bg-white"></div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
-           <div className="flex gap-2  px-5 mt-3">
-            <span onClick={(e)=>setDisability('true')} className={`border ${disability==='true' ? 'bg-gray-200':''} cursor-pointer border-gray-300 text-slate-500 text-sm rounded-full p-2`}>I have a disability</span>
-            <span onClick={(e)=>setDisability('false')} className={`border ${disability==='false' ? 'bg-gray-200':''} cursor-pointer border-gray-300 text-slate-500 text-sm rounded-full p-2`}>I don't have a disability</span>
-           </div>
+                    <div
+                        onClick={() => {
+                            setDisability('false');
+                            setSelectedOption('false');
+                        }}
+                        className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5 ${
+                            selectedOption === 'false'
+                                ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-300 shadow-md'
+                                : 'border-gray-200 hover:border-blue-200 hover:bg-gray-50/50'
+                        }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className={`font-medium ${
+                                selectedOption === 'false' ? 'text-blue-700' : 'text-gray-700'
+                            }`}>
+                                I don't have a disability
+                            </span>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                selectedOption === 'false'
+                                    ? 'border-blue-500 bg-gradient-to-r from-blue-500 to-cyan-400'
+                                    : 'border-gray-300'
+                            }`}>
+                                {selectedOption === 'false' && (
+                                    <div className="w-2 h-2 rounded-full bg-white"></div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-           <div className="flex justify-end px-5">
-            <button onClick={Disability} disabled={!disability} className={`bg-gray-100 transition-all duration-300 ${loading ? 'bg-gray-100 text-slate-400':''} ${disability ? 'cursor-pointer bg-purple-500 text-white':'cursor-not-allowed '} rounded-full px-4 py-2 text-slate-400`}>{loading ? "Updating...":'Submit'}</button>
-           </div>
+                {/* Submit Button */}
+                <div className="flex justify-end">
+                    <button
+                        onClick={Disability}
+                        disabled={!disability || loading}
+                        className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:-translate-y-0.5 ${
+                            disability && !loading
+                                ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg hover:shadow-xl cursor-pointer'
+                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        } ${
+                            loading ? 'opacity-70' : ''
+                        }`}
+                    >
+                        {loading ? (
+                            <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                Updating...
+                            </div>
+                        ) : (
+                            'Submit'
+                        )}
+                    </button>
+                </div>
+            </div>
 
+            {/* Footer Note */}
+            <div className="mt-6 pt-4 border-t border-gray-100/60">
+                <p className="text-xs text-gray-500 text-center">
+                    Your response helps us create more inclusive opportunities
+                </p>
+            </div>
         </div>
     )
 }
 import { MdDelete } from "react-icons/md";
 import TopPopup from "./topPopUp";
-import SideBarUser from "./SideBarUser";
+
 
 function ResumeUpdate({existingResumeUrl,reloadDetails}:any){
       const [ResumeAndSummaryShow,setResumeandSummaryShow] = useState(false);
@@ -2216,105 +2689,166 @@ const Headline_And_ProfileSummary_Div = ({onClose,Headline,Description,id}:any) 
 };
 
 
-function Diversity_Inclusion({setDisabilityPopup,disability}:any){
-   
-    const[militaryExp,setMilitaryexp] = useState('');
-    const[career_break,setBreak] = useState('');
-    const[loading,setLoading] = useState(false)
-    async function SetDiversity(){
-        setLoading(true)
-        try{
-           const Settled = await axios({
-             url:"https://jobportalbackend-whpt.onrender.com/user/setDiversity",
-             method:'PUT',
-             data:{
-                militaryExp:militaryExp,
-                careerBreak:career_break,
-                email:localStorage.getItem('email')
-             }
-             ,
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem('token') || ""}`
-                }
-           })
+function Diversity_Inclusion({ setDisabilityPopup, disability }: any) {
+    const [militaryExp, setMilitaryexp] = useState('');
+    const [career_break, setBreak] = useState('');
+    const [loading, setLoading] = useState(false);
 
-           if(Settled.data && Settled.data.ok){
-            setDisabilityPopup(false)
-           }
-        }
-        catch(err){
-             console.log(err)
-        }
-        finally{
-            setLoading(false)
+    // All your existing logic functions remain exactly the same...
+    async function SetDiversity() {
+        setLoading(true);
+        try {
+            const Settled = await axios({
+                url: "https://jobportalbackend-whpt.onrender.com/user/setDiversity",
+                method: 'PUT',
+                data: {
+                    militaryExp: militaryExp,
+                    careerBreak: career_break,
+                    email: localStorage.getItem('email')
+                },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token") || ""}`
+                }
+            });
+
+            if (Settled.data && Settled.data.ok) {
+                setDisabilityPopup(false);
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
         }
     }
-  
-    return <div className="fixed inset-0 flex font-aman items-center justify-center bg-black/80  z-50">
-          <div className="bg-white zoom-in rounded-4xl flex flex-col gap-5 shadow-md p-8 max-w-2xl mx-auto">
-            <div className="flex justify-end">
-                <IoMdClose onClick={()=>setDisabilityPopup(false)} className="text-lg cursor-pointer"/>
-            </div>
-             
-             <div className="flex gap-2 flex-col">
-                <span className="text-xl font-medium">Diversity & Inclusion</span>
-                <span className="text-slate-600 text-sm ">Share details to attract recruiters who value people from different backgrounds</span>
-             </div>
 
-             {/* <div className="flex gap-1 flex-col">
-                <span className="font-medium">Disability status</span>
-                <span className="text-slate-500 text-sm">Share your status to get jobs that match your needs</span>
-                <div className="flex items-center gap-2">
-                     <span className={`px-3 py-2  rounded-full ${disability==='true' ? 'text-black font-medium border border-black'
-                        :'text-slate-500 cursor-pointer  border-gray-400 border'} `}>Have disability</span>
-                     <span className={`px-3 ${disability==='false' ? 'border border-black font-medium text-black':'text-slate-500 border cursor-pointer border-gray-400'} py-2  rounded-full `}>Do not have disability</span>
-                </div>
-             </div> */}
-
-            <div className="flex gap-1 flex-col">
-                <span className="font-medium">Military status</span>
+    return (
+        <div className="fixed inset-0 flex font-aman items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
+            {/* Modal Container */}
+            <div className="bg-gradient-to-br from-white to-gray-50/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-200/80 p-8 max-w-2xl w-full mx-auto transform transition-all duration-300">
                 
-                <div className="flex items-center gap-2">
-                     <span
-                     onClick={(e)=> {
-                        setMilitaryexp('Currently serving')
-                        console.log(militaryExp);
-                     }}
-                     className={`px-3 py-2 ${militaryExp==='Currently serving' ? 'text-slate-600 border border-black':'text-slate-500 border border-gray-400'} cursor-pointer rounded-full `}>Currently serving</span>
-                     <span
-                     onClick={(e)=> setMilitaryexp('Previously served')}
-                     className={`px-3 py-2 ${militaryExp==='Previously served' ? 'text-slate-600 border border-black':'text-slate-500 border border-gray-400'} cursor-pointer rounded-full `}>Previously served</span>
-                     <span
-                     onClick={()=> setMilitaryexp('Never served')}
-                     className={`px-3 py-2 ${militaryExp==='Never served' ? 'text-slate-600 border border-black':'text-slate-500 border border-gray-400'} cursor-pointer rounded-full `}>Never served</span>
+                {/* Close Button */}
+                <div className="flex justify-end mb-4">
+                    <button
+                        onClick={() => setDisabilityPopup(false)}
+                        className="p-2 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 hover:from-gray-200 hover:to-gray-100 transition-all duration-300 border border-gray-200/60 hover:border-gray-300/80 cursor-pointer"
+                    >
+                        <IoMdClose className="text-gray-600 hover:text-gray-800 text-lg transition-colors" />
+                    </button>
                 </div>
-             </div>
-             
-               <div className="flex gap-1 flex-col">
-                <span className="font-medium">Career break</span>
-                <span className="text-slate-500 text-sm">Help recruiters understand your unique path</span>
-                <div className="flex items-center gap-2">
-                     <span
-                     onClick={()=> setBreak('Have taken')}
-                     className={`px-3 ${career_break==='Have taken' ? 'text-slate-600 border border-black':'text-slate-500 border border-gray-400'}  py-2 cursor-pointer rounded-full `}>Have taken</span>
-                     <span
-                     onClick={()=> setBreak('Have not taken')}
-                     className={`px-3 ${career_break==='Have not taken' ? 'text-slate-600 border border-black':'text-slate-500 border border-gray-400'}  py-2 cursor-pointer rounded-full `}>Have not taken</span>
-                </div>
-             </div>
-             
 
-            <div className="flex justify-end items-center">
-                <div className="flex items-center gap-7">
-                    <span onClick={()=> setDisabilityPopup(false)} className="text-blue-500 cursor-pointer font-medium">Cancel</span>
-                    <button 
-                    onClick={SetDiversity}
-                    disabled={!militaryExp || !career_break} className={`   ${!militaryExp || !career_break ? 'cursor-not-allowed bg-blue-100 text-slate-400 ':'cursor-pointer bg-blue-500 hover:bg-blue-400 text-white'}  rounded-full px-5 py-2`}>Save</button>
+                {/* Header */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-400"></div>
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                            Diversity & Inclusion
+                        </h2>
+                    </div>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                        Share details to attract recruiters who value people from different backgrounds
+                    </p>
+                </div>
+
+                {/* Military Status Section */}
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="font-semibold text-gray-900">Military status</span>
+                        <div className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-600">
+                            Optional
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-3">
+                        {['Currently serving', 'Previously served', 'Never served'].map((option) => (
+                            <button
+                                key={option}
+                                onClick={() => setMilitaryexp(option)}
+                                className={`px-5 py-3 rounded-xl border-2 transition-all duration-300 transform hover:-translate-y-0.5 ${
+                                    militaryExp === option
+                                        ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-300 shadow-md text-blue-700 font-semibold'
+                                        : 'border-gray-200 hover:border-blue-200 hover:bg-gray-50/50 text-gray-600'
+                                }`}
+                            >
+                                {option}
+                                {militaryExp === option && (
+                                    <div className="mt-1 w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 mx-auto"></div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Career Break Section */}
+                <div className="mb-10">
+                    <div className="mb-4">
+                        <span className="font-semibold text-gray-900 block mb-2">Career break</span>
+                        <p className="text-gray-500 text-sm">
+                            Help recruiters understand your unique path
+                        </p>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-3">
+                        {['Have taken', 'Have not taken'].map((option) => (
+                            <button
+                                key={option}
+                                onClick={() => setBreak(option)}
+                                className={`px-5 py-3 rounded-xl border-2 transition-all duration-300 transform hover:-translate-y-0.5 ${
+                                    career_break === option
+                                        ? 'bg-gradient-to-r from-purple-50 to-pink-50 border-purple-300 shadow-md text-purple-700 font-semibold'
+                                        : 'border-gray-200 hover:border-purple-200 hover:bg-gray-50/50 text-gray-600'
+                                }`}
+                            >
+                                {option}
+                                {career_break === option && (
+                                    <div className="mt-1 w-4 h-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-400 mx-auto"></div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-end items-center pt-6 border-t border-gray-100/60">
+                    <div className="flex items-center gap-6">
+                        <button
+                            onClick={() => setDisabilityPopup(false)}
+                            className="px-6 py-3 text-blue-600 font-medium rounded-lg hover:bg-blue-50/50 transition-all duration-300 border border-transparent hover:border-blue-200/60 cursor-pointer"
+                        >
+                            Cancel
+                        </button>
+                        
+                        <button
+                            onClick={SetDiversity}
+                            disabled={!militaryExp || !career_break || loading}
+                            className={`px-6 py-3 font-medium rounded-lg transition-all duration-300 transform hover:-translate-y-0.5 ${
+                                !militaryExp || !career_break
+                                    ? 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-400 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg hover:shadow-xl cursor-pointer'
+                            } ${
+                                loading ? 'opacity-70' : ''
+                            }`}
+                        >
+                            {loading ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Saving...
+                                </div>
+                            ) : (
+                                'Save'
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Footer Note */}
+                <div className="mt-6 p-3 bg-gradient-to-r from-blue-50/30 to-cyan-50/30 rounded-xl border border-blue-100/30">
+                    <p className="text-xs text-gray-600 text-center">
+                        Your information helps create more inclusive opportunities
+                    </p>
                 </div>
             </div>
-
-          </div>
-    </div>
+        </div>
+    );
 }
 
 
