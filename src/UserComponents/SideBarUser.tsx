@@ -1,126 +1,270 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { BiQuestionMark } from "react-icons/bi";
-import { CiSettings } from "react-icons/ci";
-import { FaHamburger, FaUserCircle } from "react-icons/fa";
-import { GiTireIronCross } from "react-icons/gi";
-import { LuLogOut, LuUser } from "react-icons/lu";
+import { useEffect, useState, useRef } from "react";
+import { 
+  BiQuestionMark, 
+  BiStats, 
+  BiTrendingUp, 
+  BiChevronRight 
+} from "react-icons/bi";
+import { 
+  CiSettings, 
+  CiEdit,
+  CiBookmark,
+  CiBellOn
+} from "react-icons/ci";
+import { 
+  FaUserCircle, 
+  FaRegEye,
+  FaChartLine,
+  FaRegNewspaper
+} from "react-icons/fa";
+import { 
+  GiTireIronCross 
+} from "react-icons/gi";
+import { 
+  LuLogOut, 
+  LuUser,
+  LuSearch
+} from "react-icons/lu";
+import { 
+  HiOutlineBuildingOffice2,
+  HiOutlineBriefcase
+} from "react-icons/hi2";
 
-export default function SideBarUser({profilePic, onClose, sideBarUser }: any) {
+export default function SideBarUser({ profilePic, onClose, sideBarUser }: any) {
   const [isClosing, setIsClosing] = useState(false);
+  const [stats, setStats] = useState({
+    searchAppearances: 0,
+    recruiterActions: 0,
+    lastUpdated: "Last 90 days"
+  });
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const handleClose = () => {
     setIsClosing(true);
-    // Wait for animation to complete before calling onClose
     setTimeout(() => {
       onClose();
-    }, 500); // Match this with your CSS transition duration
+    }, 400);
   };
 
-  // Reset closing state when sidebar opens
+  // Fetch user stats
   useEffect(() => {
     if (sideBarUser) {
       setIsClosing(false);
+      // Fetch user stats from API
+      fetchUserStats();
     }
   }, [sideBarUser]);
 
+  const fetchUserStats = async () => {
+    try {
+      // Example API call - replace with your actual endpoint
+      const response = await axios.get("https://jobportalbackend-whpt.onrender.com/user/stats", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      if (response.data) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.log("Error fetching stats:", error);
+    }
+  };
 
-   function Logout(){
-         localStorage.removeItem('email');
-         localStorage.removeItem('name');
-         localStorage.removeItem('token');
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
 
-         window.location.href = '/'
-   }
+  function Logout() {
+    localStorage.removeItem('email');
+    localStorage.removeItem('name');
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  }
+
+  const menuItems = [
+    {
+      icon: <FaUserCircle className="text-lg" />,
+      label: "My Profile",
+      href: "/IamUser/profile",
+      badge: null
+    },
+    {
+      icon: <HiOutlineBriefcase className="text-lg" />,
+      label: "My Applications",
+      href: "/IamUser/applicationStatus",
+      badge: null
+    },
+    {
+      icon: <CiBookmark className="text-lg" />,
+      label: "Saved Jobs",
+      href: "/IamUser/savedjobs",
+      badge: null
+    },
+    {
+      icon: <CiBellOn className="text-lg" />,
+      label: "Notifications",
+      href: "/IamUser/notifications",
+      badge:null
+    },
+  
+    {
+      icon: <CiSettings className="text-lg" />,
+      label: "Settings",
+      href: "/settings",
+      badge: null
+    }
+  ];
 
   return (
-    <div className="fixed inset-0 flex font-aman justify-end bg-black/20 backdrop-blur-xs z-50">
-      {/* Backdrop click to close */}
+    <div 
+      className="fixed inset-0 z-50 flex justify-end"
+      onClick={handleBackdropClick}
+    >
+      {/* Animated Backdrop */}
       <div 
-        className={`absolute inset-0 transition-opacity duration-300 ${
-          isClosing ? 'opacity-0' : 'opacity-100'
+        className={`absolute inset-0 bg-black transition-all duration-500 ${
+          sideBarUser && !isClosing 
+            ? 'opacity-50 backdrop-blur-sm' 
+            : 'opacity-0 backdrop-blur-0'
         }`}
-        onClick={handleClose}
       />
       
+      {/* Sidebar Container */}
       <div 
-        className={`font-aman h-screen px-4 py-10 bg-white rounded-l-2xl w-[400px] z-50 transition-transform duration-300 ${
-          sideBarUser && !isClosing ? 'slide-in' : 'slide-out'
+        ref={sidebarRef}
+        className={`relative h-screen bg-white w-full max-w-md shadow-2xl transition-all duration-500 ease-out ${
+          sideBarUser && !isClosing 
+            ? 'translate-x-0 opacity-100' 
+            : 'translate-x-full opacity-0'
         }`}
+        style={{
+          boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.1)'
+        }}
       >
-        {/* Cross button */}
-        <div onClick={handleClose} className="flex mb-3 justify-end cursor-pointer">
-          <GiTireIronCross className="text-slate-600 hover:text-slate-400" />
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-gradient-to-b from-white to-white/95 backdrop-blur-sm">
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full blur-md opacity-50"></div>
+                {profilePic ? (
+                  <img
+                    src={profilePic}
+                    alt="Profile"
+                    className="relative w-12 h-12 rounded-full border-3 border-white object-cover shadow-sm"
+                  />
+                ) : (
+                  <div className="relative w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
+                    <LuUser className="text-white text-xl" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {localStorage.getItem('name')?.toUpperCase() || 'User Profile'}
+                </h2>
+                <p className="text-sm text-gray-500">View and update your profile</p>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleClose}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 group"
+            >
+              <GiTireIronCross className="text-gray-400 text-xl group-hover:text-gray-600 transition-colors" />
+            </button>
+          </div>
         </div>
 
-        {/* profile picture and name description*/}
-        <div className="px-4 gap-4 flex justify-around items-center">
-          {/* picture */}
-          {profilePic && 
-          <img
-          src={profilePic}
-          alt="profile"
-          
-          className={`w-[100px] h-[100px] bg-gray-100 rounded-full object-contain cursor-pointer transition 
-         `}
-              
-          
-            />
-          }
-
-          {!profilePic &&  <div className="bg-slate-400 p-1 rounded-full">
-            <div className="p-1 bg-white rounded-full">
-            <FaUserCircle className="text-slate-400 hover:text-black/50 cursor-pointer w-[80px] h-[80px]" />
+        {/* Scrollable Content */}
+        <div className="h-[calc(100vh-80px)] overflow-y-auto pb-24">
+          {/* Profile Section */}
+          <div className="p-6">
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="relative">
+                  {profilePic ? (
+                    <img
+                      src={profilePic}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full border-3 border-white object-cover shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
+                      <LuUser className="text-white text-2xl" />
+                    </div>
+                  )}
+                 
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {localStorage.getItem('name') || 'Complete Your Profile'}
+                  </h3>
+                  <p className="text-gray-600 text-sm mt-1">
+                    {localStorage.getItem('email')}
+                  </p>
+                 
+                </div>
+              </div>
+            </div>
           </div>
-          </div>}
+
+          {/* Menu Items */}
+          <div className="px-6">
+            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+              Menu
+            </h4>
+            <div className="space-y-1">
+              {menuItems.map((item, index) => (
+                <a
+                  key={index}
+                  href={item.href}
+                  className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gray-100 group-hover:bg-blue-100 transition-colors">
+                      <div className="text-gray-600 group-hover:text-blue-600 transition-colors">
+                        {item.icon}
+                      </div>
+                    </div>
+                    <span className="text-gray-700 font-medium group-hover:text-gray-900">
+                      {item.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {item.badge && (
+                      <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-bold rounded-full">
+                        {item.badge}
+                      </span>
+                    )}
+                    <BiChevronRight className="text-gray-400 text-xl group-hover:text-gray-600" />
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+
          
-          
-
-          {/* Name */}
-          <div className="flex flex-col gap-2">
-            <span className="font-medium text-xl">{localStorage.getItem('name')?.toUpperCase()}</span>
-            <span className="text-slate-600">Not Mentioned</span>
-            <span
-            onClick={()=> window.location.href = '/IamUser/profile'}
-            className="text-blue-500 font-medium cursor-pointer" >View & Update Profile</span>
-          </div>
         </div>
 
-        {/* line */}
-       <div className="border-t border-gray-300 my-4"></div>
-
-
-        {/* profile performance */}
-        <div className="px-4 flex justify-between items-center">
-          <span className="font-semibold">Your profile performance</span>
-          <span className="text-slate-500 text-xs">Last 90 days</span>
-        </div>
-
-        
-
-        <div className=" mx-5 flex justify-between mt-7 h-[140px] bg-blue-100 rounded-xl">
-          <div className="w-[50%] border-gray-300 border-r flex flex-col items-center justify-center">
-            <span>0</span>
-            <span>Search Appearances</span>
-            <span>View all</span>
-          </div>
-
-      
-
-          <div className="w-[50%] flex flex-col items-center justify-center">
-            <span>0</span>
-            <span>Recruiter Actions</span>
-            <span>View all</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4 px-4 mt-10 items-start">
-          <span className="flex gap-3  cursor-pointer items-center"><FaHamburger className="text-slate-500" /><span>Naukri Blog</span></span>
-          <span className="flex gap-3 cursor-pointer text-lg items-center"><CiSettings className="text-slate-500" /><span>Settings</span></span>
-          <span className="flex gap-3 cursor-pointer items-center"><BiQuestionMark className="text-slate-500" /><span>FAQs</span></span>
-          <span
-          onClick={Logout}
-          className="flex gap-3 cursor-pointer items-center"><LuLogOut className="text-slate-500" /><span>Logout</span></span>
+        {/* Footer with Logout */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white to-white/90 backdrop-blur-sm border-t border-gray-100 p-6">
+          <button
+            onClick={Logout}
+            className="w-full flex items-center justify-center gap-3 p-3.5 bg-gradient-to-r from-red-50 to-orange-50 text-red-600 font-semibold rounded-xl border border-red-100 hover:border-red-300 hover:shadow-md transition-all duration-200 group"
+          >
+            <div className="p-2 rounded-lg bg-white group-hover:bg-red-100 transition-colors">
+              <LuLogOut className="text-red-600 text-lg group-hover:scale-110 transition-transform" />
+            </div>
+            <span>Logout</span>
+          </button>
+          <p className="text-center text-xs text-gray-500 mt-3">
+            YuvaJobs v2.0 • {new Date().getFullYear()}
+          </p>
         </div>
       </div>
     </div>
