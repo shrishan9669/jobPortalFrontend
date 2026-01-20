@@ -1,709 +1,460 @@
-import { CiCircleCheck, CiSearch, CiSettings } from "react-icons/ci";
-import { FaArrowDown, FaGraduationCap, FaRegBuilding, FaRocket, FaRupeeSign, FaSearch } from "react-icons/fa";
-import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
-import { MdOutlineScreenSearchDesktop } from "react-icons/md";
-import { LuHouse } from "react-icons/lu";
-import { IoBagRemoveOutline } from "react-icons/io5";
-import { GoGraph } from "react-icons/go";
-import { IoCubeOutline } from "react-icons/io5";
-import { useState } from "react";
-import Footer from "./footer";
-import { Spinner } from "./loader";
-export default function Home(){
+import React, { useEffect, useRef, useState } from 'react';
+import { For_EmployersDiv, Job_Hover_Div } from './header';
+import { useNavigate } from 'react-router-dom';
 
-    const listOfTypesofJobs = [
-        {
-            "text":"Remote",
-            "react_icon":<LuHouse className="text-xl"/>
-        },
-        {
-            "text":"MNC",
-            "react_icon":<FaRegBuilding className="text-xl"/>
-        },
-        {
-            "text":"Project Mg...",
-            "react_icon":<CiCircleCheck className="text-xl"/>
-        },{
-            "text":"Software &...",
-            "react_icon":<MdOutlineScreenSearchDesktop className="text-xl"/>
-        },
-        {
-            "text":"Sales",
-            "react_icon":<IoBagRemoveOutline  className="text-xl"/>
-        },
-        
-        {
-            "text":"Marketing",
-            "react_icon":<GoGraph  className="text-xl"/>
-        },
-        {
-            "text":"Remote",
-            "react_icon":<IoCubeOutline className="text-xl"/>
-        },
-        {
-            "text":"Supply Ch...",
-            "react_icon":<CiSettings  className="text-xl"/>
-        },
-        {
-            "text":"Engineering",
-            "react_icon":<FaRocket  className="text-xl"/>
-        },
-        {
-            "text":"Startup",
-            "react_icon":<FaRupeeSign  className="text-xl"/>
-        },
-        {
-            "text":"Banking &...",
-            "react_icon":<FaGraduationCap className="text-xl"/>
-        }
-    ]
-
-
-   const companies_sponsored = [
-    "All",
-        "Services",
-        "Technology", 
-        "Healthcare & Life Sciences",
-        "Manufacturing & Production",
-        "Infrastructure, Transport & Real Estate",
-        "BFSI",
-        "Consumer, Retail & Hospitality",
-        "BPM", 
-        "Media, Entertainment & Telecom",
-        "Education",
-        "Professional Services"
-];
-    return <div className="font-aman">
-         {/* heading  */}
-
-
-        
-         <div className="flex flex-col gap-3 mt-20 justify-center items-center"> 
-            <h1 className="text-4xl font-bold">Find your dream job now</h1>
-            <span className="font-medium text-xl">5 lakh+ jobs for you to explore</span>
-         </div>
-
-         {/* Skills , experience ,location and search option */}
-
-        <div className="flex justify-center mt-20">
-  <div className="w-[70%]  text-slate-500 flex items-center px-6 py-2 shadow-lg rounded-full gap-4">
-    {/* Search Icon */}
-    <FaSearch/>
-
-    {/* Skills Input */}
-    <div className="flex-1">
-      <input 
-        type="text" 
-        className="w-full text-lg outline-none bg-transparent "
-        placeholder="Enter skills/designations/companies" 
-      />
-    </div>
-
-    <div className="">|</div>
-
-    {/* Experience Input */}
-    <div className="flex items-center gap-2 min-w-[150px]">
-      <input 
-        type="text" 
-        className="w-full text-lg outline-none bg-transparent "
-        placeholder="Select experience" 
-      />
-    <FaArrowDown/>
-    </div>
-
-    <div className="">|</div>
-
-    {/* Location Input */}
-    <div className="flex-1">
-      <input 
-        type="text" 
-        className="w-full text-lg outline-none bg-transparent "
-        placeholder="Enter location" 
-      />
-    </div>
-
-    {/* Search Button */}
-    <button className="bg-blue-600 text-white rounded-full font-medium px-6 py-3 whitespace-nowrap hover:bg-blue-700 transition-colors">
-      Search
-    </button>
-  </div>
-</div>
-
-         {/* diwali banner */}
-         <CareerDiwaliBanner/>
-
-
-         <div className="mx-auto mt-10 gap-6 flex justify-center flex-wrap max-w-6xl">
-              
-            {
-                listOfTypesofJobs.map((each:any)=>{
-                    return <div className="flex justify-center border transition-all duration-200   rounded-xl p-4 border-gray-300 cursor-pointer hover:shadow-lg items-center gap-4">
-
-                        {each.react_icon}
-
-                        <span className="flex font-bold items-center justify-center gap-2">
-                            {each.text}
-                            <IoIosArrowForward className="text-slate-500" />
-                        </span>
-
-                    </div>
-                })
-            }
-
-         </div>
-
-
-         {/* Top companies hiring now */}
-
-         <div className="mt-20">
-            <div className="flex justify-center text-2xl font-bold">
-                <h1>Top companies hiring now</h1>
-            </div>
-
-            <JobSectors/>
-
-
-         </div>
-
-
-         {/* Featured companies actively hiring */}
-         <div>
-             <FeaturedCompanies/>
-         </div>
-
-         {/* Popular Roles */}
-         <div className="mx-auto mt-20 flex relative justify-center">
-              
-            <div className="bg-gradient-to-b  h-auto rounded-2xl border border-orange-200  w-[70%] p-4  flex justify-start to-orange-100  ">
-                
-                <div className="flex gap-3 items-center flex-col">
-                   <img src="https://static.naukimg.com/s/0/0/i/role-collection-ot.png" className="h-[200px] translate-x-15" alt="" />
-                   
-                    <span className="text-2xl max-w-xs font-bold">Discover jobs across popular roles</span>
-
-                    <p className="text-slate-600 text-sm">Select a role and we'll show you relevant jobs for it!</p>
-                </div>
-            </div>
-
-            <div className="absolute -top-14 right-70 grid p-8 h-[450px] gap-3 border border-gray-300 bg-white rounded-3xl grid-cols-2">
-                <span className="flex border justify-center items-center border-gray-300 rounded-xl p-3 flex-col">
-                    <h1>Full stack developer</h1>
-                    <span>21.8k+ Jobs {">"}</span>
-                </span>
-                 <span className="flex border justify-center items-center border-gray-300 rounded-xl  flex-col">
-                    <h1>Full stack developer</h1>
-                    <span>21.8k+ Jobs {">"}</span>
-                </span>
-                 <span className="flex border justify-center items-center border-gray-300 rounded-xl p-3 flex-col">
-                    <h1>Full stack developer</h1>
-                    <span>21.8k+ Jobs {">"}</span>
-                </span>
-                 <span className="flex border justify-center items-center border-gray-300 rounded-xl p-1 flex-col">
-                    <h1>Full stack developer</h1>
-                    <span>21.8k+ Jobs {">"}</span>
-                </span>
-                 <span className="flex border justify-center items-center border-gray-300  rounded-xl p-3 flex-col">
-                    <h1>Full stack developer</h1>
-                    <span>21.8k+ Jobs {">"}</span>
-                </span>
-                 <span className="flex border justify-center items-center border-gray-300 rounded-xl p-3 flex-col">
-                    <h1>Full stack developer</h1>
-                    <span>21.8k+ Jobs {">"}</span>
-                </span>
-                
-            </div>
-            
-           
-         </div>
-
-
-         {/* Sponsored companies */}
-
-         <div className="mt-20 flex gap-5 flex-col">
-            <div className="flex justify-center">
-                <h1 className="text-2xl font-bold">Sponsored companies</h1>
-            </div>
-
-            {/* List */}
-
-            <div className="flex gap-3 mx-36 flex-wrap justify-center">
-                {
-                    companies_sponsored.map((each:any)=>{
-                       return <span className={`px-5 py-2 cursor-pointer hover:bg-gray-300 border rounded-full  border-gray-300 text-xs ${each==='All' ? 'text-black border-slate-900  bg-gray-300 font-medium':'text-slate-700'}`}>{each}</span>
-                    })
-                }
-            </div>
-
-
-            <div className="mx-auto">
-                 <Sponsored_Companies/>
-            </div>
-
-
-         </div>
-
-
-        {/* Footer */}
-        <Footer/>
-
-         
-    </div>
-}
-
-
-const CareerDiwaliBanner = () => {
-  return (
-    <div className="relative cursor-pointer mt-20 w-full max-w-4xl mx-auto p-4  bg-gradient-to-r from-orange-500 to-yellow-600 rounded-2xl shadow-xl overflow-hidden">
-      {/* Top Decorative Border (Simulated with a repeating pattern or texture) */}
-  <div 
-  className={`absolute top-0 left-0 right-0 h-4 bg-[url('data:image/svg+xml;utf8,${encodeURIComponent('<svg viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg"><polygon points="0,0 10,10 20,0" style="fill:rgb(255,255,255,0.2);"/></svg>')}')]`}
-  style={{ backgroundSize: '20px 10px', backgroundRepeat: 'repeat-x' }}
->
-</div>
-      <div className="absolute top-4 left-0 right-0 h-2 bg-yellow-700/30"></div>
-
-      {/* Content Container */}
-      <div className="relative flex flex-col items-center justify-center space-y-4 pt-6 pb-4">
-        
-        {/* Crown Icon (Placeholder) */}
-        <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 text-white border border-white/50">
-          {/* Using a simple text/symbol for the crown, replace with an actual SVG/Icon if needed */}
-          <span role="img" aria-label="crown" className="text-xl">👑</span>
-        </div>
-
-        {/* Hashtag */}
-        <div className="absolute top-2 right-2 bg-white text-orange-600 font-semibold text-sm px-3 py-1 rounded-full shadow-md">
-          #CareerWaliDiwali
-        </div>
-
-        {/* Main Text */}
-        <p className="text-white text-xl md:text-2xl font-bold text-center drop-shadow-lg">
-          This Diwali, make your career shine brighter with Naukri Pro ✨
-        </p>
-
-        {/* Button */}
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
-          Upgrade My Profile
-        </button>
-      </div>
-
-      {/* Left Decoration (Flower/Marigold Placeholder) */}
-      <div className="absolute top-0 left-0 w-20 h-20 opacity-70">
-        {/* Simple placeholder for the flower, consider replacing with an image */}
-        <span role="img" aria-label="flower" className="text-5xl absolute top-1 left-1 transform rotate-12">🌼</span>
-      </div>
-
-      {/* Right Decoration (Diyas Placeholder) */}
-      <div className="absolute bottom-2 right-4 w-16 h-16">
-        {/* Simple placeholder for Diyas, consider replacing with an image/SVG */}
-        <span role="img" aria-label="diya" className="text-4xl">🪔🪔</span>
-      </div>
-    </div>
-  );
-};
-
-
-
-
-const JobSectors = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+const YuvaJobsHomepage = () => {
+  // Refs for scroll animations
+  const heroRef = useRef(null);
+  const featuresRef = useRef(null);
+  const howItWorksRef = useRef(null);
+  const testimonialsRef = useRef(null);
+  const ctaRef = useRef(null);
   
-  const jobSectors = [
-    {
-      title: "MNCs",
-      hiring: "2.2K+ are actively hiring",
-      color: "from-blue-500 to-purple-600",
-      icon: "🏢"
-    },
-    {
-      title: "Fintech",
-      hiring: "138 are actively hiring",
-      color: "from-green-500 to-teal-600",
-      icon: "💳"
-    },
-    {
-      title: "FMCG & Retail",
-      hiring: "159 are actively hiring",
-      color: "from-orange-500 to-red-600",
-      icon: "🛒"
-    },
-    {
-      title: "Startups",
-      hiring: "733 are actively hiring",
-      color: "from-pink-500 to-rose-600",
-      icon: "🚀"
-    },
-    {
-      title: "Edtech",
-      hiring: "161 are actively hiring",
-      color: "from-indigo-500 to-blue-600",
-      icon: "🎓"
-    },
-    {
-      title: "Healthcare",
-      hiring: "289 are actively hiring",
-      color: "from-emerald-500 to-green-600",
-      icon: "🏥"
-    },
-    {
-      title: "IT Services",
-      hiring: "1.5K+ are actively hiring",
-      color: "from-cyan-500 to-blue-600",
-      icon: "💻"
-    },
-    {
-      title: "Manufacturing",
-      hiring: "421 are actively hiring",
-      color: "from-amber-500 to-orange-600",
-      icon: "🏭"
-    }
+  // State for animations
+  const [isHeroVisible, setIsHeroVisible] = useState(false);
+  const [isFeaturesVisible, setIsFeaturesVisible] = useState(false);
+  const [isHowItWorksVisible, setIsHowItWorksVisible] = useState(false);
+  const [isTestimonialsVisible, setIsTestimonialsVisible] = useState(false);
+  const [isCtaVisible, setIsCtaVisible] = useState(false);
+  
+  // Mock job data
+  const [featuredJobs, setFeaturedJobs] = useState([
+    { id: 1, title: "Frontend Developer", company: "TechCorp", location: "Remote", type: "Full-time", salary: "₹8-12 LPA", posted: "2 days ago" },
+    { id: 2, title: "UX Designer", company: "DesignStudio", location: "Mumbai", type: "Contract", salary: "₹6-9 LPA", posted: "1 day ago" },
+    { id: 3, title: "Backend Engineer", company: "DataSystems", location: "Bangalore", type: "Full-time", salary: "₹10-15 LPA", posted: "3 days ago" },
+    { id: 4, title: "Marketing Manager", company: "GrowthHack", location: "Delhi", type: "Full-time", salary: "₹7-10 LPA", posted: "5 days ago" },
+  ]);
+  
+  // Stats data
+  const stats = [
+    { label: "Jobs Posted", value: "5,000+", icon: "📋" },
+    { label: "Companies", value: "1,200+", icon: "🏢" },
+    { label: "Candidates Hired", value: "15,000+", icon: "👥" },
+    { label: "Success Rate", value: "92%", icon: "📈" },
   ];
-
-  const cardsPerPage = 4;
-  const totalPages = Math.ceil(jobSectors.length / cardsPerPage);
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === totalPages - 1 ? 0 : prevIndex + 1
+  
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (entry.target === heroRef.current) {
+              setIsHeroVisible(true);
+            } else if (entry.target === featuresRef.current) {
+              setIsFeaturesVisible(true);
+            } else if (entry.target === howItWorksRef.current) {
+              setIsHowItWorksVisible(true);
+            } else if (entry.target === testimonialsRef.current) {
+              setIsTestimonialsVisible(true);
+            } else if (entry.target === ctaRef.current) {
+              setIsCtaVisible(true);
+            }
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -100px 0px" }
     );
-  };
+    
+    if (heroRef.current) observer.observe(heroRef.current);
+    if (featuresRef.current) observer.observe(featuresRef.current);
+    if (howItWorksRef.current) observer.observe(howItWorksRef.current);
+    if (testimonialsRef.current) observer.observe(testimonialsRef.current);
+    if (ctaRef.current) observer.observe(ctaRef.current);
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? totalPages - 1 : prevIndex - 1
-    );
-  };
-
-  const visibleCards = jobSectors.slice(
-    currentIndex * cardsPerPage,
-    (currentIndex + 1) * cardsPerPage
-  );
-
-   // Calculate transform for smooth sliding
-  const getTransform = () => {
-    return `translateX(-${currentIndex * (100 / cardsPerPage)}%)`;
-  };
-
+ 
+  const navigate = useNavigate() 
   return (
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto">
-        
-        
-        <div className="relative">
-          {/* Navigation Arrows */}
-          <button
-            onClick={prevSlide}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-10 bg-white border border-gray-200 rounded-full p-3 transition-all duration-300 hover:scale-110"
-          >
-            <svg className="w-6 h-6 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 font-sans">
+      {/* Header/Navigation */}
+      {/* <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
+        <div className="container md:px-24 mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">YJ</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">Yuva<span className="text-blue-600">Jobs</span></h1>
+          </div>
 
-          <button
-            onClick={nextSlide}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 border-gray-200 border bg-white translate-x-4 z-10 rounded-full p-3 transition-all duration-300 hover:scale-110"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
 
-          {/* Cards Container */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          
+         
+          
+          <div className="flex space-x-4">
+            <button className="px-5 py-2 text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition">
+              Log In
+            </button>
+            <button className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+              Sign Up
+            </button>
+          </div>
+        </div>
+      </header> */}
+      
+      <main>
+        {/* Hero Section */}
+        <section 
+          ref={heroRef} 
+          id="home"
+          className={`container mx-auto px-4 py-16 md:py-24 transition-all duration-1000 ${isHeroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        >
+          <div className="max-w-4xl mx-auto text-center flex flex-col gap-5">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 ">
+              Find Your <span className="text-blue-600">Dream Job</span> with Ease
+            </h1>
+            <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+              YuvaJobs connects talented youth with top employers. AI-powered job matching for candidates and streamlined hiring for companies.
+            </p>
             
-            {visibleCards.map((sector, index) => (
-              <div
-                key={sector.title}
-                className={`  text-black rounded-2xl p-6 shadow-lg transform transition-all duration-500  cursor-pointer border border-gray-300 `}
+            {/* <div className="flex flex-col md:flex-row gap-4 justify-center mb-16">
+              <div className="relative flex-grow max-w-xl">
+                <input 
+                  type="text" 
+                  placeholder="Job title, skills, or company" 
+                  className="w-full px-6 py-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                />
+                <button className="absolute right-2 top-2 px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:shadow-lg transition">
+                  Search
+                </button>
+              </div>
+              <button className="px-8 py-4 border-2 border-blue-600 text-blue-600 font-medium rounded-xl hover:bg-blue-50 transition">
+                Advanced Filters
+              </button>
+            </div> */}
+            
+            {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <div 
+                  key={index} 
+                  className={`bg-white p-6 rounded-xl shadow-sm border border-gray-100 transition-all duration-700 ${isHeroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                  style={{ transitionDelay: `${index * 150}ms` }}
+                >
+                  <div className="text-3xl mb-2">{stat.icon}</div>
+                  <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
+                  <div className="text-gray-600">{stat.label}</div>
+                </div>
+              ))}
+            </div> */}
+          </div>
+        </section>
+        
+        {/* Features Section */}
+        <section 
+          ref={featuresRef}
+          id="employers"
+          className="container mx-auto px-4 py-16"
+        >
+          <div className={`text-center mb-12 transition-all duration-1000 ${isFeaturesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">For Employers & Job Seekers</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Powerful tools for both sides of the job market</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Employer Features */}
+            <div className={`bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transition-all duration-1000 ${isFeaturesVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mr-4">
+                  <span className="text-white text-2xl">👔</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">For Employers</h3>
+              </div>
+              
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Post jobs easily with our intuitive dashboard</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Manage applicants, shortlist candidates, and schedule interviews</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">AI-powered candidate matching based on skills and experience</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Track hiring metrics and optimize your recruitment process</span>
+                </li>
+              </ul>
+              
+              <button className="mt-8 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                Post a Job
+              </button>
+            </div>
+            
+            {/* Employee Features */}
+            <div className={`bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transition-all duration-1000 ${isFeaturesVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+              <div className="flex items-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
+                  <span className="text-white text-2xl">👤</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">For Job Seekers</h3>
+              </div>
+              
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Personalized job recommendations based on your interests</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Skill-based matching with relevant job opportunities</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Easy application process with resume parsing</span>
+                </li>
+                <li className="flex items-start">
+                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                  </div>
+                  <span className="text-gray-700">Track your applications and interview schedules</span>
+                </li>
+              </ul>
+              
+              <button className="mt-8 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                Upload Resume
+              </button>
+            </div>
+          </div>
+        </section>
+        
+        {/* Featured Jobs */}
+        {/* <section id="jobs" className="container mx-auto px-4 py-16">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Featured Jobs</h2>
+              <p className="text-gray-600">Curated opportunities based on current market trends</p>
+            </div>
+            <button className="px-6 py-3 text-blue-600 font-medium hover:bg-blue-50 rounded-xl transition">
+              View All Jobs →
+            </button>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredJobs.map((job, index) => (
+              <div 
+                key={job.id} 
+                className={`bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 ${isFeaturesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                style={{ transitionDelay: `${index * 100}ms` }}
               >
-               
-                <h3 className="text-lg flex gap-2 items-center font-[600]  mb-2">
-                  {sector.title}
-                  <IoIosArrowForward className=""/>
-                </h3>
-                <p className=" text-xs text-slate-600 font-medium">
-                  {sector.hiring}
-                </p>
-                <div className="mt-4 flex items-center ">
-                  <span className="text-sm">Explore Jobs</span>
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">{job.title}</h3>
+                    <p className="text-gray-700">{job.company}</p>
+                  </div>
+                  <div className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">
+                    {job.type}
+                  </div>
+                </div>
+                
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center text-gray-600">
+                    <span className="mr-2">📍</span>
+                    <span>{job.location}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <span className="mr-2">💰</span>
+                    <span>{job.salary}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <span className="mr-2">🕐</span>
+                    <span>{job.posted}</span>
+                  </div>
+                </div>
+                
+                <button className="w-full py-3 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 font-medium rounded-lg hover:from-blue-100 hover:to-indigo-100 transition">
+                  Apply Now
+                </button>
+              </div>
+            ))}
+          </div>
+        </section> */}
+        
+        {/* How It Works Section */}
+        <section 
+          ref={howItWorksRef}
+          id="about"
+          className="container mx-auto px-4 py-16"
+        >
+          <div className={`text-center mb-16 transition-all duration-1000 ${isHowItWorksVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How YuvaJobs Works</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">A seamless process from job search to hiring</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { step: "1", title: "Create Profile", desc: "Job seekers upload resumes and set preferences. Employers create company profiles.", icon: "📝" },
+              { step: "2", title: "Smart Matching", desc: "Our AI matches candidates with jobs based on skills, interests, and preferences.", icon: "🤖" },
+              { step: "3", title: "Connect & Hire", desc: "Employers review shortlisted candidates, schedule interviews, and make offers.", icon: "🤝" }
+            ].map((item, index) => (
+              <div 
+                key={index} 
+                className={`relative bg-white rounded-2xl p-8 shadow-lg border border-gray-100 transition-all duration-1000 ${isHowItWorksVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                style={{ transitionDelay: `${index * 200}ms` }}
+              >
+                <div className="absolute -top-5 left-8 w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
+                  {item.step}
+                </div>
+                <div className="text-5xl mb-4">{item.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                <p className="text-gray-600">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        
+        {/* Testimonials */}
+        {/* <section 
+          ref={testimonialsRef}
+          className="container mx-auto px-4 py-16"
+        >
+          <div className={`text-center mb-12 transition-all duration-1000 ${isTestimonialsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Success Stories</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">What our users say about YuvaJobs</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { name: "Priya Sharma", role: "Software Developer", quote: "YuvaJobs matched me with my dream job in just 2 weeks! The skill-based recommendations were spot on.", avatar: "PS" },
+              { name: "Rahul Mehta", role: "HR Manager", quote: "As an employer, the dashboard makes it so easy to manage candidates and schedule interviews.", avatar: "RM" },
+              { name: "Ananya Reddy", role: "Marketing Executive", quote: "Found 3 perfect job matches in my preferred location. The application process is seamless.", avatar: "AR" }
+            ].map((testimonial, index) => (
+              <div 
+                key={index} 
+                className={`bg-white rounded-2xl p-8 shadow-lg border border-gray-100 transition-all duration-1000 ${isTestimonialsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                style={{ transitionDelay: `${index * 150}ms` }}
+              >
+                <div className="flex items-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-gray-600">{testimonial.role}</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 italic">"{testimonial.quote}"</p>
+                <div className="flex mt-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-xl">★</span>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Dots Indicator */}
-        <div className="flex justify-center  mt-8 space-x-2">
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentIndex 
-                  ? 'bg-black scale-125' 
-                  : 'bg-slate-200 '
-              }`}
-            />
-          ))}
-        </div>
-
-        {/* Current Page Info */}
-        <div className="text-center mt-6 text-white/70">
-          Page {currentIndex + 1} of {totalPages}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
-const FeaturedCompanies = () => {
-  const companies = [
-    {
-      name: "Lloyds Technology Centre",
-      rating: "3.4",
-      reviews: "176 | reviews",
-      description: "A tech and data company.",
-      logo: "🏢"
-    },
-    {
-      name: "Capgemini",
-      rating: "3.7",
-      reviews: "49.5K+|reviews",
-      description: "Global leader in technology services.",
-      logo: "💼"
-    },
-    {
-      name: "Nagarro",
-      rating: "3.9",
-      reviews: "4.6K+ | reviews",
-      description: "Leader in digital product engineering.",
-      logo: "🚀"
-    },
-    {
-      name: "Infosys BPM",
-      rating: "3.5",
-      reviews: "11.3K+ | reviews",
-      description: "Join us to navigate your next",
-      
-      logo: "🌍"
-    }
-  ];
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Featured companies actively hiring
-        </h1>
-      
-      </div>
-
-      {/* Companies Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        {companies.map((company, index) => (
-          <div
-            key={index}
-            className="flex flex-col items-center  rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-all duration-300"
-          >
-            {/* Company Header */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-xl">
-                  {company.logo}
-                </div>
-                <div className="flex flex-col items-center">
-                  <h3 className="font-semibold text-center text-gray-900 text-lg">
-                    {company.name}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="flex items-center gap-1">
-                      <span className="text-yellow-500">⭐</span>
-                      <span className="text-sm font-medium text-gray-700">
-                        {company.rating}
-                      </span>
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {company.reviews}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <p className="text-gray-600 mb-4 text-sm text-center">
-              {company.description}
-            </p>
-
-            
-
-            {/* View Jobs Button */}
-            <button className="w-[80%] bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium py-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 group">
-              View jobs
-              <IoIosArrowForward className="group-hover:translate-x-1 transition-transform duration-200" />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* View All Companies Button */}
-      <div className="text-center">
-        <button className="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-8 py-3 rounded-lg transition-all duration-200 hover:shadow-md flex items-center gap-2 mx-auto group">
-          View all companies
-          <IoIosArrowForward className="group-hover:translate-x-1 transition-transform duration-200" />
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Sponsored_Companies=()=>{
-    const companies = [
-  {
-    name: "Yotta Infrastructure",
-    rating: "3.6",
-    reviews: "145 reviews",
-   
-    tags: ["Corporate", "B2B", "Private", "Service"],
-    logo: "🔧"
-  },
-  {
-    name: "Happiest Minds Technologies",
-    rating: "3.6", 
-    reviews: "1.5K+ reviews",
-    industry: "IT Services & Consulting",
-    tags: ["BPM / BPO", "IT Services & Consulting", "Product"],
-    logo: "💡"
-  },
-  {
-    name: "AGS Health",
-    rating: "4.0",
-    reviews: "3.1K+ reviews", 
-    industry: "Healthcare Technology",
-    tags: ["Software Product", "Analytics / KPO / Research", "B2B"],
-    logo: "🏥"
-  },
-  {
-    name: "Myeti",
-    rating: "3.8",
-    reviews: "149 reviews",
-    industry: "IT Services & Consulting",
-    tags: ["Foreign MNC", "B2B", "Private"],
-    logo: "🌐"
-  },
-  {
-    name: "Mercedes Benz", 
-    rating: "3.7",
-    reviews: "19K+ reviews",
-    industry: "Automobile",
-    tags: ["Public", "Corporate", "Automobile"],
-    logo: "🚗"
-  },
-  {
-    name: "GAP INC.",
-    displayName: "GAP",
-    rating: "3.7",
-    reviews: "254 reviews", 
-    industry: "Retail",
-    tags: ["Forbes Global 2000", "Retail", "B2C"],
-    logo: "👕"
-  },
-  {
-    name: "Thermo Fisher Scientific",
-    rating: "3.8",
-    reviews: "982 reviews",
-    industry: "Biotech & Life Sciences", 
-    tags: ["Foreign MNC", "Biotech & Life sciences"],
-    logo: "🔬"
-  },
-  {
-    name: "TTEC",
-    rating: "3.6",
-    reviews: "1.5K+ reviews",
-    industry: "Business Process Management",
-    tags: ["Foreign MNC", "Public", "Analytics / KPO / Research"],
-    logo: "📊"
-  }
-];
-
- return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Featured companies actively hiring
-        </h1>
-      
-      </div>
-
-      {/* Companies Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        {companies.map((company, index) => (
-          <div
-            key={index}
-            className="flex flex-col  items-center cursor-pointer rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300"
-          >
-            {/* Company Header */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-xl">
-                  {company.logo}
-                </div>
-                <div className="flex flex-col items-center">
-                  <h3 className="font-bold text-center text-gray-900 text-lg">
-                    {company.name}
-                  </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="flex items-center gap-1">
-                      <span className="text-yellow-500">⭐</span>
-                      <span className="text-sm font-medium text-gray-700">
-                        {company.rating}
-                      </span>
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {company.reviews}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-           {/* Array of types */}
-
-           <div className="flex gap-1 flex-wrap justify-center">
-            {    
-            company.tags.map((each:any)=>{
-                return <span className="border border-gray-300 text-slate-500 rounded-full px-2 py-1 text-[10px]">{each}</span>
-            })
-           }
-           </div>
+        </section> */}
         
-
+        {/* CTA Section */}
+        <section 
+          ref={ctaRef}
+          className="container mx-auto px-4 py-16"
+        >
+          <div className={`bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-center transition-all duration-1000 ${isCtaVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Ready to Transform Your Career?</h2>
+            <p className="text-blue-100 text-xl mb-10 max-w-2xl mx-auto">
+              Join thousands of job seekers and employers who have found success with YuvaJobs
+            </p>
             
-
-           
-          
+            <div className="flex flex-col md:flex-row gap-6 justify-center">
+              <button
+              onClick={()=> navigate('/signup')}
+              className="px-8 py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-gray-100 hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+                Sign Up as Job Seeker
+              </button>
+              <button
+              onClick={()=> navigate('/recruiter/login')}
+              className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition-all transform hover:-translate-y-0.5">
+                Register as Employer
+              </button>
+            </div>
+            
+            <p className="text-blue-200 mt-8">No credit card required • Free plan available</p>
           </div>
-        ))}
-      </div>
-
-      {/* View All Companies Button */}
-      <div className="text-center">
-        <button className="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-8 py-3 rounded-lg transition-all duration-200 hover:shadow-md flex items-center gap-2 mx-auto group">
-          View all companies
-          <IoIosArrowForward className="group-hover:translate-x-1 transition-transform duration-200" />
-        </button>
-      </div>
+        </section>
+      </main>
+      
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">YJ</span>
+                </div>
+                <h2 className="text-2xl font-bold">Yuva<span className="text-blue-400">Jobs</span></h2>
+              </div>
+              <p className="text-gray-400">Connecting talent with opportunity through AI-powered job matching.</p>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-bold mb-4">Job Seekers</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white transition">Browse Jobs</a></li>
+                <li><a href="#" className="hover:text-white transition">Upload Resume</a></li>
+                <li><a href="#" className="hover:text-white transition">Career Advice</a></li>
+                <li><a href="#" className="hover:text-white transition">Salary Calculator</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-bold mb-4">Employers</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white transition">Post a Job</a></li>
+                <li><a href="#" className="hover:text-white transition">Browse Candidates</a></li>
+                <li><a href="#" className="hover:text-white transition">Pricing</a></li>
+                <li><a href="#" className="hover:text-white transition">Employer Resources</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-bold mb-4">Contact Us</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li className="flex items-center">
+                  <span className="mr-2">📧</span>
+                  <span>support@yuvajobs.com</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">📱</span>
+                  <span>+91 98765 43210</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">📍</span>
+                  <span>Mumbai, India</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+            <p>© {new Date().getFullYear()} YuvaJobs. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
-}
+};
 
-
-
-
+export default YuvaJobsHomepage;
