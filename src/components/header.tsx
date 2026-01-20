@@ -75,7 +75,7 @@ export default function Header({ setShowLogin, setSideBarUser }: HeaderProps) {
   async function Get_NotificationCount() {
     try {
       const Count_UnRead = await axios({
-        url: "http://localhost:3000/user/getNotiCount",
+        url: "https://jobportalbackend-whpt.onrender.com/user/getNotiCount",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         },
