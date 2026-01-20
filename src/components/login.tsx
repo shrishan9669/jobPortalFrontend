@@ -1,290 +1,364 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import BarLoader, { Spinner } from "./loader";
-import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useEffect, useState } from "react";
+// import  { Spinner } from "./loader";
+import {  FaEye, FaEyeSlash, FaPaperPlane, FaShieldAlt } from "react-icons/fa";
 
 import { GoogleLogin } from "@react-oauth/google";
 
-export default function Login({show,onClose,onShowPopup,onShowOtpPopup}:any) {
+import {  FaGoogle, FaArrowRight, FaLock, FaEnvelope, FaTimes } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
-  const[emailid,setEmail] = useState('');
-  const[password,setPassword] = useState('');
-  const[loader,setLoader] = useState(false)
-  const[msg,setMsg] = useState('')
-  const[showPass,setShowpass] = useState(false)
-  const[forgetPass,setForgetPass] = useState(false)
-  
+// Spinner component for loading states
+const Spinner = () => (
+  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
+);
 
-  function Allfields(){
-    if(!emailid || !password){
-      return false
+export default function Login({ show, onClose, onShowPopup, onShowOtpPopup }: any) {
+  const [emailid, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loader, setLoader] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [showPass, setShowpass] = useState(false);
+  const [forgetPass, setForgetPass] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  function Allfields() {
+    if (!emailid || !password) {
+      return false;
     }
     return true;
   }
 
-  async function HandleLogin(){
-    try{
+  async function HandleLogin() {
+    try {
       setLoader(true);
-
       const ResponseLogin = await axios({
-        url:`https://jobportalbackend-whpt.onrender.com/user/Signin?emailid=${emailid}&password=${password}`,
-        method:'GET',
-        
-      })
+        url: `https://jobportalbackend-whpt.onrender.com/user/Signin?emailid=${emailid}&password=${password}`,
+        method: 'GET',
+      });
 
-      if(ResponseLogin && ResponseLogin.data.ok){
-          setMsg('User logined Successfully!!')
-          localStorage.setItem('email',ResponseLogin.data.email);
-          localStorage.setItem('name',ResponseLogin.data.name);
-          localStorage.setItem('token',ResponseLogin.data.token);
-         
-            window.location.href = '/IamUser/profile'
+      if (ResponseLogin && ResponseLogin.data.ok) {
+        setMsg('User logged in successfully!');
+        localStorage.setItem('email', ResponseLogin.data.email);
+        localStorage.setItem('name', ResponseLogin.data.name);
+        localStorage.setItem('token', ResponseLogin.data.token);
+        window.location.href = '/IamUser/profile';
       }
-     
-    }
-    catch(err:any){
+    } catch (err: any) {
       if (err.response && err.response.data && err.response.data.msg) {
-        setMsg(err.response.data.msg);   // 👈 YAHI MAIN POINT
+        setMsg(err.response.data.msg);
       } else {
         setMsg("Something went wrong. Try again later.");
       }
-    }
-    finally{
-      setLoader(false)
+    } finally {
+      setLoader(false);
     }
   }
-   async function HandleGoogleSignin(response: any){
-    
-      try{
-        const token = response.credential;
-        console.log("HandleGoogleSignin " + token);
-        
-        const res = await axios.post(
+
+  async function HandleGoogleSignin(response: any) {
+    try {
+      const token = response.credential;
+      const res = await axios.post(
         "https://jobportalbackend-whpt.onrender.com/user/google-login",
         { token },
-       
       );
 
-      console.log("Login successful:", res.data);
-      if(res.data && res.data.ok){
-          setMsg(res.data.msg)
-          localStorage.setItem('email',res.data.email);
-          localStorage.setItem('name',res.data.name);
-          localStorage.setItem('token',res.data.token);
-          window.location.href = '/IamUser/profile'
+      if (res.data && res.data.ok) {
+        setMsg(res.data.msg);
+        localStorage.setItem('email', res.data.email);
+        localStorage.setItem('name', res.data.name);
+        localStorage.setItem('token', res.data.token);
+        window.location.href = '/IamUser/profile';
       }
-     
-      onClose(); // close login panel
-      }
-      catch(err:any){
-        if (err.response && err.response.data && err.response.data.msg) {
-          alert(err.response.data.msg)
-        setMsg(err.response.data.msg);   // 👈 YAHI MAIN POINT
+      onClose();
+    } catch (err: any) {
+      if (err.response && err.response.data && err.response.data.msg) {
+        setMsg(err.response.data.msg);
       } else {
         setMsg("Something went wrong. Try again later.");
       }
-      }
+    }
   }
 
-  async function ForgotPassVerify(){
-    if(!emailid){
+  async function ForgotPassVerify() {
+    if (!emailid) {
       alert("Please type Registered Email Id!!");
-      return ;
+      return;
     }
     setLoader(true);
-    try{
-       const EmailRegistered = await axios({
-        url:`https://jobportalbackend-whpt.onrender.com/user/forgetLogin?email=${emailid}`,
-        method:'GET'
-       })
+    try {
+      const EmailRegistered = await axios({
+        url: `https://jobportalbackend-whpt.onrender.com/user/forgetLogin?email=${emailid}`,
+        method: 'GET'
+      });
 
-       if(EmailRegistered.data && EmailRegistered.data.real){
-        // Hit pop up...for changing the password..
-        console.log("Yes it is me!!");
-        localStorage.setItem('emailId',emailid);
-           onClose();
-          onShowPopup();
-          
-       }
-    }
-    catch(err){
-     console.log(err)
-    }
-    finally{
-       setLoader(false)
+      if (EmailRegistered.data && EmailRegistered.data.real) {
+        localStorage.setItem('emailId', emailid);
+        onClose();
+        onShowPopup();
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoader(false);
     }
   }
-  
-
-
- 
-
-  const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => {
     setIsClosing(true);
-    // Wait for animation to complete before calling onClose
     setTimeout(() => {
       onClose();
-    }, 500); // Match this with your CSS transition duration
+    }, 300);
   };
 
-  // Reset closing state when sidebar opens
   useEffect(() => {
     if (show) {
       setIsClosing(false);
     }
   }, [show]);
 
+  if (!show && !isClosing) return null;
+
   return (
-    <div className="fixed inset-0 flex font-aman items-center justify-end bg-black/40 backdrop-blur-sm z-50">
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 font-aman flex items-center justify-end z-50"
+        >
+          {/* Backdrop with blur effect */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClose}
+            className="absolute inset-0 bg-gradient-to-br from-black/30 via-purple-900/20 to-blue-900/10 backdrop-blur-md"
+          />
 
-      
-        <div className={`bg-white ${show && !isClosing ? 'slide-in':'slide-out'} rounded-l-2xl w-[400px] font-aman h-screen z-50 shadow-xl p-8`}>
-          
-          {/* Close button */}
-      <button
-        onClick={handleClose}
-        className=" text-gray-500 flex justify-center w-full hover:text-gray-700 text-3xl cursor-pointer"
-      >
-        ×
-      </button>
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-800">Login</h1>
-            <button
-             onClick={()=>{
-              onClose();
-              window.location.href = '/signup'
-             }}
-            className="text-blue-600 cursor-pointer hover:text-blue-700 font-medium transition-colors duration-200">
-              Register for free
-            </button>
-          </div>
+          {/* Login Panel */}
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: isClosing ? '100%' : 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25 }}
+            className="relative bg-gradient-to-br from-white via-white to-gray-50 w-full max-w-md h-screen shadow-2xl overflow-hidden"
+          >
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full -translate-x-16 -translate-y-16" />
+            <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tr from-blue-400/10 to-purple-400/10 rounded-full translate-x-32 translate-y-32" />
 
-          {/* Form */}
-          <div className="space-y-6">
-            
-            {/* Email/Username */}
-            <div className="space-y-2">
-              <label htmlFor="emailid" className="block text-sm font-medium text-gray-700">
-                Email ID / Username
-              </label>
-              <input
-                type="text"
-                id="emailid"
-                onChange={(e)=> setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none"
-                placeholder="Enter your email or username"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="flex justify-between items-center pr-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none">
-                 <input
-                type={showPass ? 'text':'password'}
-                id="password"
-                onChange={(e)=> setPassword(e.target.value)}
-                className="w-full px-4 py-3 outline-0 "
-                placeholder="Enter your password"
-              />
-              {showPass ? <FaEyeSlash onClick={()=>setShowpass(false)} />:<FaEye onClick={()=>setShowpass(true)}/>}  
-              </div>
-             
-              <div className="flex flex-col justify-end">
+            <div className="relative h-full flex flex-col p-8">
+              {/* Header */}
+              <div className="flex justify-between items-start mb-10">
+                <div>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Welcome Back
+                  </h1>
+                  <p className="text-gray-500 mt-2">Sign in to continue your journey</p>
+                </div>
                 <button
-                onClick={()=>{
-                  setForgetPass((prev:any)=> !prev);
-                }}
-                className="text-blue-600 hover:text-blue-700 cursor-pointer hover:underline text-sm font-medium transition-colors duration-200">
-                  Forgot Password?
+                  onClick={handleClose}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 group"
+                >
+                  <FaTimes className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </button>
+              </div>
+
+              {/* Form */}
+              <div className="flex-1 space-y-8">
+                {/* Email Input */}
+                <div className="space-y-4">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Email Address
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                      <FaEnvelope className="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                    </div>
+                    <input
+                      type="text"
+                      
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-12 pr-4 py-4 bg-white/50 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                </div>
+
+                {/* Password Input */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <label className="block text-sm font-semibold text-gray-700">
+                      Password
+                    </label>
+                    <button
+                      onClick={() => setForgetPass(!forgetPass)}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                      <FaLock className="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                    </div>
+                    <input
+                      type={showPass ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full pl-12 pr-12 py-4 bg-white/50 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      onClick={() => setShowpass(!showPass)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      {showPass ? (
+                        <FaEyeSlash className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <FaEye className="w-5 h-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Forgot Password Section */}
+                <AnimatePresence>
+                  {forgetPass && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="p-4 bg-blue-50/50 border-2 border-blue-100 rounded-xl space-y-3">
+                        <p className="text-sm text-blue-800 font-medium">Reset your password</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={emailid}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="flex-1 px-4 py-2 bg-white border border-blue-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none"
+                            placeholder="Enter registered email"
+                          />
+                          <button
+                            onClick={ForgotPassVerify}
+                            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                          >
+                            {loader ? <Spinner /> : 'Reset'}
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Message Display */}
+                {msg && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`p-3 rounded-lg text-center text-sm font-medium ${msg.includes('successfully') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                      }`}
+                  >
+                    {msg}
+                  </motion.div>
+                )}
+
+                {/* Login Button */}
+                <button
+                  onClick={HandleLogin}
+                  disabled={!Allfields() || loader}
+                  className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 ${Allfields()
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl transform hover:-translate-y-0.5'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                >
+                  {loader ? (
+                    <Spinner />
+                  ) : (
+                    <>
+                      <span className="text-white">Sign In</span>
+                      <FaArrowRight className="w-4 h-4 text-white" />
+                    </>
+                  )}
                 </button>
 
-               {forgetPass ? <div className="flex flex-col gap-2 items-center">
-                <input type="text" className="w-full px-4 py-3 outline-0 border border-blue-400 rounded-lg mt-3" placeholder="Enter registered Email..." onChange={(e)=> setEmail(e.target.value)} />
+                {/* OTP Login */}
+                <div className="text-center">
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onShowOtpPopup();
+                    }}
+                    className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline transition-all duration-300"
+                  >
+                    Login with OTP instead
+                  </button>
+                </div>
 
-                <button
-                onClick={ForgotPassVerify}
-                className="px-3 py-1 bg-blue-400 rounded-full outline-0 text-white font-medium hover:bg-blue-500 cursor-pointer">{loader ? <Spinner/>:'Verify'}</button>
-               </div>:''}
-               
-                
+                {/* Divider */}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white/50 backdrop-blur-sm text-gray-500">Or continue with</span>
+                  </div>
+                </div>
+
+                {/* Social Login */}
+                <div className="space-y-4">
+                  <GoogleLogin
+                    onSuccess={HandleGoogleSignin}
+                    onError={() => setMsg("Google login failed. Please try again.")}
+                    shape="rectangular"
+                    size="large"
+                    width="100%"
+                    text="continue_with"
+                    logo_alignment="left"
+                  />
+                </div>
+
+                {/* Footer */}
+                <div className="pt-8 border-t border-gray-200 text-center">
+                  <p className="text-gray-600">
+                    Don't have an account?{' '}
+                    <button
+                      onClick={() => {
+                        onClose();
+                        window.location.href = '/signup';
+                      }}
+                      className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
+                    >
+                      Sign up for free
+                    </button>
+                  </p>
+                </div>
               </div>
+
+              {/* Decorative bottom gradient */}
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
             </div>
-
-            {/* Login Button */}
-            <button
-            onClick={HandleLogin}
-            disabled={!Allfields()}
-            className={`w-full  flex justify-center text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 transform outline-0  active:scale-[0.98] shadow-lg hover:shadow-xl ${Allfields() ? 'bg-blue-600 hover:bg-blue-700 hover:scale-[1.02]':'bg-slate-400 text-slate-500 cursor-not-allowed'}`}>
-              {loader ? <Spinner />:'Login'}
-            </button>
-
-            <span className="flex justify-center text-green-400">{msg}</span>
-
-            {/* OTP Login */}
-            <div className="flex justify-center">
-              <button
-              onClick={()=>{
-                // Closing login first 
-                onClose()
-                // then show OTP popup
-                onShowOtpPopup()
-              }}
-              className="text-blue-600 cursor-pointer hover:scale-[1.1] transition-all hover:text-blue-700 font-medium  duration-500">
-                Use OTP to Login
-              </button>
-            </div>
- 
-           
-           
-
-            {/* Divider */}
-            <div className="relative flex items-center my-6">
-              <div className="flex-grow border-t border-gray-300"></div>
-              <span className="flex-shrink mx-4 text-gray-400 text-sm">Or</span>
-              <div className="flex-grow border-t border-gray-300"></div>
-            </div>
-
-            
-
-            {/* Google Sign In */}
-            {/* <button
-            onClick={HandleGoogleSignin}
-            
-            className="w-full border border-gray-300 cursor-pointer hover:border-gray-400 text-gray-700 hover:text-gray-900 py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-3 hover:shadow-md">
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              Sign in with Google
-            </button> */}
-
-            <GoogleLogin onSuccess={HandleGoogleSignin} onError={()=>alert("Google login failed!!")}/>
-          </div>
-    </div>
-
-    </div>
-    
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
-
+import {  FaCheck, FaKey } from 'react-icons/fa';
 
 
 export function ChangePassword({ onClose }: any) {
   const [newpass, setNewpass] = useState("");
   const [confirm, setConfirm] = useState("");
   const [msg, setMsg] = useState("");
-  const [endMsg,setEndmsg] = useState('')
-  const [showNewpass,setShownewPass] = useState(false)
-  const [showConfirmpass,setShowConfirmPass] = useState(false)
+  const [endMsg, setEndmsg] = useState('');
+  const [showNewpass, setShownewPass] = useState(false);
+  const [showConfirmpass, setShowConfirmPass] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   function handleConfirmChange(e: any) {
@@ -302,246 +376,486 @@ export function ChangePassword({ onClose }: any) {
     if (!allFields) return;
     
     setIsLoading(true);
-    // Simulate API call
-    try{
+    try {
       const SendingUpdate = await axios({
-        url:'https://jobportalbackend-whpt.onrender.com/user/changePassword',
-        method:'PUT',
-        data:{
-          email:localStorage.getItem('emailId'),
-          newpass:confirm
+        url: 'https://jobportalbackend-whpt.onrender.com/user/changePassword',
+        method: 'PUT',
+        data: {
+          email: localStorage.getItem('emailId'),
+          newpass: confirm
         }
-      })
+      });
 
-      if(SendingUpdate.data){
-           setEndmsg(SendingUpdate.data.msg);
+      if (SendingUpdate.data) {
+        setEndmsg(SendingUpdate.data.msg);
       }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
     }
-    catch(err){
-      console.log(err)
-    }
-    finally{
-      setIsLoading(false)
-    }
-    
   };
 
   const allFields = newpass && confirm && newpass === confirm;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-lg z-50 animate-fadeIn">
-      <div className="bg-gradient-to-br font-aman from-white to-gray-50/80 p-8 rounded-3xl w-full max-w-md mx-4 shadow-2xl border border-white/20 relative">
-        {/* Close Button */}
-        <button
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 flex items-center justify-center z-50"
+      >
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 hover:text-gray-700 transition-all duration-200 group"
+          className="absolute inset-0 bg-gradient-to-br from-black/40 via-purple-900/30 to-blue-900/20 backdrop-blur-md"
+        />
+
+        {/* Modal */}
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          transition={{ type: "spring", damping: 25 }}
+          className="relative w-full max-w-md mx-4"
         >
-          <span className="text-lg group-hover:scale-110 transition-transform">×</span>
-        </button>
-
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            Change Password
-          </h1>
-          <p className="text-gray-500 text-sm mt-2">Create a strong new password</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* New Password Field */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <span>New Password</span>
-              {newpass && (
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  newpass.length >= 8 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-yellow-100 text-yellow-700'
-                }`}>
-                  {newpass.length >= 8 ? 'Strong' : 'Weak'}
-                </span>
-              )}
-            </label>
-            <div className="relative">
-              <input
-                value={newpass}
-                onChange={(e) => setNewpass(e.target.value)}
-                type={showNewpass ? 'text':'password'}
-                placeholder="Enter new password"
-                className="w-full px-4 py-3 bg-white/80 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all duration-200 shadow-sm hover:shadow-md"
-              />
-             
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    {showNewpass ? <FaEyeSlash onClick={()=>setShownewPass(false)}/>:<FaEye onClick={()=>setShownewPass(true)}/>}
+          <div className="bg-gradient-to-br from-white via-white to-gray-50/95 rounded-2xl shadow-2xl border border-white/50 backdrop-blur-sm overflow-hidden">
+            {/* Header */}
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <FaKey className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                      New Password
+                    </h1>
+                    <p className="text-gray-500 text-sm">Secure your account</p>
+                  </div>
                 </div>
-              
-            </div>
-          </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-all duration-200 group"
+                >
+                  <FaTimes className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </button>
+              </div>
 
-          {/* Confirm Password Field */}
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700">Confirm Password</label>
-            <div className="relative">
-                <input
-              value={confirm}
-              onChange={handleConfirmChange}
-              type={showConfirmpass ? 'text':'password'}
-              placeholder="Confirm your password"
-              className="w-full px-4 py-3 bg-white/80 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all duration-200 shadow-sm hover:shadow-md"
-            />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    {showConfirmpass ? <FaEyeSlash onClick={()=>setShowConfirmPass(false)}/>:<FaEye onClick={()=>setShowConfirmPass(true)}/>}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* New Password */}
+                <div className="space-y-3">
+                  <label className="flex items-center justify-between text-sm font-semibold text-gray-700">
+                    <span className="flex items-center gap-2">
+                      <FaLock className="w-4 h-4 text-gray-400" />
+                      New Password
+                    </span>
+                    {newpass && (
+                      <span className={`text-xs px-2 py-1 rounded-full ${newpass.length >= 8
+                          ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-700'
+                          : 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-700'
+                        }`}>
+                        {newpass.length >= 8 ? 'Strong ✓' : 'Weak'}
+                      </span>
+                    )}
+                  </label>
+                  <div className="relative group">
+                    <input
+                      value={newpass}
+                      onChange={(e) => setNewpass(e.target.value)}
+                      type={showNewpass ? 'text' : 'password'}
+                      placeholder="Create new password"
+                      className="w-full pl-4 pr-12 py-3.5 bg-white/80 border-2 border-gray-200 rounded-xl outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShownewPass(!showNewpass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      {showNewpass ? (
+                        <FaEyeSlash className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <FaEye className="w-5 h-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
                 </div>
+
+                {/* Confirm Password */}
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <FaLock className="w-4 h-4 text-gray-400" />
+                    Confirm Password
+                  </label>
+                  <div className="relative group">
+                    <input
+                      value={confirm}
+                      onChange={handleConfirmChange}
+                      type={showConfirmpass ? 'text' : 'password'}
+                      placeholder="Re-enter your password"
+                      className="w-full pl-4 pr-12 py-3.5 bg-white/80 border-2 border-gray-200 rounded-xl outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPass(!showConfirmpass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      {showConfirmpass ? (
+                        <FaEyeSlash className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <FaEye className="w-5 h-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+
+                  <AnimatePresence>
+                    {msg && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="flex items-center gap-2 text-sm px-3 py-2 bg-red-50 border border-red-200 rounded-lg"
+                      >
+                        <div className="w-5 h-5 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+                          <FaTimes className="w-3 h-3" />
+                        </div>
+                        <span className="text-red-700">{msg}</span>
+                      </motion.div>
+                    )}
+                    {!msg && confirm && newpass === confirm && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="flex items-center gap-2 text-sm px-3 py-2 bg-green-50 border border-green-200 rounded-lg"
+                      >
+                        <div className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                          <FaCheck className="w-3 h-3" />
+                        </div>
+                        <span className="text-green-700">Passwords match!</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Success Message */}
+                <AnimatePresence>
+                  {endMsg && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+                          <FaCheck className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-green-800">Password Updated!</p>
+                          <p className="text-sm text-green-600">{endMsg}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={!allFields || isLoading}
+                  className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 ${allFields && !isLoading
+                      ? 'bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Spinner />
+                      <span>Updating...</span>
+                    </div>
+                  ) : (
+                    'Change Password'
+                  )}
+                </button>
+              </form>
+
+              {/* Password Tips */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm">💡</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800">Create a strong password:</p>
+                    <ul className="mt-1 text-sm text-gray-600 space-y-1">
+                      <li className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${newpass.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`} />
+                        At least 8 characters
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${/[A-Z]/.test(newpass) && /[a-z]/.test(newpass) ? 'bg-green-500' : 'bg-gray-300'}`} />
+                        Upper & lowercase letters
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${/\d/.test(newpass) ? 'bg-green-500' : 'bg-gray-300'}`} />
+                        Include numbers
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
-           
-            {msg && (
-              <div className="flex items-center gap-2 text-red-500 text-sm animate-pulse">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                {msg}
-              </div>
-            )}
-            {!msg && confirm && newpass === confirm && (
-              <div className="flex items-center gap-2 text-green-500 text-sm">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Passwords match!
-              </div>
-            )}
+
+            {/* Decorative bottom bar */}
+            <div className="h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500" />
           </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!allFields || isLoading}
-            className={`w-full py-3.5 rounded-xl font-semibold text-white transition-all duration-300 transform ${
-              allFields && !isLoading
-                ? "bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] shadow-md"
-                : "bg-gray-400 text-gray-500 cursor-not-allowed"
-            } ${isLoading ? 'cursor-wait' : ''}`}
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
-               
-                <Spinner/>
-              </div>
-            ) : (
-              "Change Password"
-            )}
-          </button>
-        </form>
-
-        <div className="flex text-green-400 font-medium justify-center">
-            {endMsg}
-        </div>
-
-        {/* Password Tips */}
-        <div className="mt-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
-          <p className="text-xs text-gray-600 text-center">
-            💡 <strong>Tip:</strong> Use at least 8 characters with mix of letters, numbers & symbols
-          </p>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
-export function LoginWithOtp({onClose}:any){
-  const[email,setEmail] = useState('');
-  const[showOtpInput,setShowOtpInput] = useState(false)
-  const[loading,setLoading] = useState(false);
-  const[otp,setOtp] = useState('')
-  const[msg,setMsg] = useState('');
+export function LoginWithOtp({ onClose }: any) {
+  const [email, setEmail] = useState('');
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [msg, setMsg] = useState('');
 
-  async function CheckEmail(){
+  async function CheckEmail() {
     setLoading(true);
-    try{
+    try {
       const Check_Email = await axios({
-      url:`https://jobportalbackend-whpt.onrender.com/user/sendOtp?email=${email}`,
-      method:"GET"
-    }) 
+        url: `https://jobportalbackend-whpt.onrender.com/user/sendOtp?email=${email}`,
+        method: "GET"
+      });
 
-    if(Check_Email.data && Check_Email.data.real){
-          localStorage.setItem('otp',Check_Email.data.otp)
-          localStorage.setItem('token',Check_Email.data.token);
-          localStorage.setItem('email',email)
-          setShowOtpInput(true);
-          
+      if (Check_Email.data && Check_Email.data.real) {
+        localStorage.setItem('otp', Check_Email.data.otp);
+        localStorage.setItem('token', Check_Email.data.token);
+        localStorage.setItem('email', email);
+        setShowOtpInput(true);
+        setMsg('OTP sent successfully! Check your email.');
+      }
+    } catch (err) {
+      console.log(err);
+      setMsg('Error sending OTP. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    }
-    catch(err){
-      console.log(err)
-    }
-    finally{
-      setLoading(false)
-    }
-    
   }
 
-  function CheckOtp(){
-    if(localStorage.getItem('otp')===otp){
-       setMsg("Your otp is correct");
-       window.location.href = '/IamUser/profile'
-       return ;
+  function CheckOtp() {
+    if (localStorage.getItem('otp') === otp) {
+      setMsg("OTP verified successfully!");
+      setTimeout(() => {
+        window.location.href = '/IamUser/profile';
+      }, 1500);
+      return;
     }
-    setMsg("Check otp again..!!")
+    setMsg("Invalid OTP. Please try again.");
   }
-
-  
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-lg z-50 animate-fadeIn">
-      <div className="bg-gradient-to-br font-aman from-white to-gray-50/80 p-8 rounded-3xl w-full max-w-md mx-4 shadow-2xl border border-white/20 relative">
-   <div className="flex justify-between mb-5 font-roboto">
-        <h1 className="text-2xl">Login with OTP.</h1>
-        <span onClick={onClose} className="text-xl font-bold cursor-pointer">X</span>
-      </div>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 flex items-center justify-center z-50"
+      >
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-gradient-to-br from-black/40 via-blue-900/30 to-purple-900/20 backdrop-blur-md"
+        />
 
-      <div className="flex gap-2 flex-col">
-        <span className="font-medium">Enter email:</span>
-        <input onChange={(e)=> setEmail(e.target.value)} type="text" placeholder="Enter registered email..." className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none" />
-
-        <button
-        onClick={CheckEmail}
-        disabled={!email} className={`w-full mt-3 border border-slate-400 p-2 rounded-full   ${!email ? 'cursor-not-allowed text-slate-400':'cursor-pointer hover:bg-slate-300 text-slate-800'}`}>
-
-          {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <Spinner/>
+        {/* Modal */}
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          transition={{ type: "spring", damping: 25 }}
+          className="relative w-full max-w-md mx-4"
+        >
+          <div className="bg-gradient-to-br from-white via-white to-gray-50/95 rounded-2xl shadow-2xl border border-white/50 backdrop-blur-sm overflow-hidden">
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <FaShieldAlt className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                      OTP Login
+                    </h1>
+                    <p className="text-gray-500 text-sm">Secure login with one-time password</p>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-all duration-200 group"
+                >
+                  <FaTimes className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </button>
               </div>
-            ) : (
-              "Verify"
-            )}
-        </button>
-      </div>  
 
-      <div className="mt-5">
-      {showOtpInput && (
-        <div className="flex gap-3 items-center flex-col">
-            <span className="text-green-400">OTP has sent to your Email.</span>
-            <input  onChange={(e)=> setOtp(e.target.value)} type="text" placeholder="Enter otp.." className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 outline-none" />
+              {/* Email Input Section */}
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <FaEnvelope className="w-4 h-4 text-gray-400" />
+                    Enter your registered email
+                  </label>
+                  <div className="relative group">
+                    <input
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      type="email"
+                      placeholder="you@example.com"
+                      className="w-full pl-12 pr-4 py-3.5 bg-white/80 border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                    />
+                    <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  </div>
 
-            <button
-            onClick={CheckOtp}
-            disabled={!otp} className={`px-5 py-2 rounded-full  text-white font-medium mt-3 ${!otp ? 'cursor-not-allowed bg-slate-500':'bg-blue-600 cursor-pointer hover:bg-blue-400'}`}>Login</button>
+                  <button
+                    onClick={CheckEmail}
+                    disabled={!email || loading}
+                    className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${email && !loading
+                        ? 'bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <Spinner />
+                        <span>Sending OTP...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-2">
+                        <FaPaperPlane className="w-4 h-4" />
+                        <span>Send OTP</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
 
-            {msg}
-        </div>
-      )}
-      </div>
-      
-      </div>
-   
-    </div>
-  )
+                {/* OTP Input Section */}
+                <AnimatePresence>
+                  {showOtpInput && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-4 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-100 rounded-2xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center">
+                            <FaLock className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-800">Enter OTP</p>
+                            <p className="text-sm text-gray-600">Check your email for the code</p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="relative group">
+                            <input
+                              value={otp}
+                              onChange={(e) => setOtp(e.target.value)}
+                              type="text"
+                              placeholder="Enter 6-digit OTP"
+                              className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                              maxLength={6}
+                            />
+                            <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                          </div>
+
+                          <button
+                            onClick={CheckOtp}
+                            disabled={!otp || otp.length !== 6}
+                            className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${otp && otp.length === 6
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              }`}
+                          >
+                            Verify & Login
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Messages */}
+                <AnimatePresence>
+                  {msg && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className={`p-4 rounded-xl border ${msg.includes('successfully') || msg.includes('sent')
+                          ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                          : 'bg-gradient-to-r from-red-50 to-orange-50 border-red-200'
+                        }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${msg.includes('successfully') || msg.includes('sent')
+                            ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                            : 'bg-gradient-to-r from-red-400 to-orange-500'
+                          }`}>
+                          {msg.includes('successfully') || msg.includes('sent') ? (
+                            <FaCheck className="w-4 h-4 text-white" />
+                          ) : (
+                            <FaTimes className="w-4 h-4 text-white" />
+                          )}
+                        </div>
+                        <span className={`font-medium ${msg.includes('successfully') || msg.includes('sent')
+                            ? 'text-green-800'
+                            : 'text-red-800'
+                          }`}>
+                          {msg}
+                        </span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* OTP Info */}
+                <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-gray-400 to-gray-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">ℹ️</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">About OTP Login</p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        A one-time password will be sent to your email for secure login.
+                        The OTP is valid for 10 minutes.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Decorative bottom bar */}
+            <div className="h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500" />
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
 }
 
 
