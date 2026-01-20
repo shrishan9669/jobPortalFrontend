@@ -1,40 +1,67 @@
-import React, { useState } from 'react';
-import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa';
+import { useState } from 'react';
 import axios from 'axios';
-import BarLoader, { Spinner } from './loader';
-import TopPopup from '@/UserComponents/topPopUp';
+import { FaEye, FaEyeSlash, FaCheck, FaMapMarkerAlt, FaBriefcase, FaLocationArrow, FaUser, FaEnvelope, FaLock, FaPhone, FaGoogle, FaArrowRight, FaTimes, FaStar } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 
-type FormDataType = {
-  fullName: string;
-  email: string;
-  password: string;
-  mobile: string;
-  workStatus: string;
-  promotions: boolean;
-  roles: string[];   // 👈 important,
-  preferedLocations:string[]
-};
+const Spinner = () => (
+  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+);
+
+const TopPopup = ({ text, show, onClose }: any) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -100, opacity: 0 }}
+        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md"
+      >
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center justify-between mx-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <FaCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-semibold">Success!</p>
+              <p className="text-sm opacity-90">{text}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="hover:bg-white/20 p-2 rounded-full transition-colors">
+            <FaTimes className="w-4 h-4" />
+          </button>
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
 
 const NaukriRegister = () => {
-  const [formData, setFormData] = useState<FormDataType>({
+  const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     mobile: '',
     workStatus: '',
     promotions: true,
-    roles:[],
-    preferedLocations:[]
+    roles: [] as string[],
+    preferedLocations: [] as string[]
   });
-  
-  function AllFilled(){
-    if(!formData.fullName || !formData.mobile || !formData.password || !formData.email || !formData.workStatus  || !currCity){
-      return false
-    } else return true;
-  }
+
   const [showPassword, setShowPassword] = useState(false);
-  const [loader,setLoader] = useState(false)
-  const handleChange = (e:any) => {
+  const [loader, setLoader] = useState(false);
+  const [currCity, setCurCity] = useState('');
+  const [cityarr, setCityArr] = useState<string[]>([]);
+  const [showPopup, setPopup] = useState(false);
+  const [activeStep, setActiveStep] = useState(1);
+
+  function AllFilled() {
+    if (!formData.fullName || !formData.mobile || !formData.password || !formData.email || !formData.workStatus || !cityarr[0]) {
+      return false;
+    }
+    return true;
+  }
+
+  const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -42,609 +69,551 @@ const NaukriRegister = () => {
     }));
   };
 
-  const handleSubmit = async(e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    setLoader(true)
+    setLoader(true);
 
-    try{
-       const SendingData = await axios({
-      url:'https://jobportalbackend-whpt.onrender.com/user/UserCreate',
-      method:"POST",
-      data:{
-        name:formData.fullName,
-        email:formData.email,
-        password:formData.password,
-        phone:formData.mobile,
-        location:currCity,
-        experience:formData.workStatus,
-        roles:formData.roles,
-        preferedLocations:formData.preferedLocations
-
+    try {
+      const SendingData = await axios({
+        url: 'https://jobportalbackend-whpt.onrender.com/user/UserCreate',
+        method: "POST",
+        data: {
+          name: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.mobile,
+          location: cityarr[0],
+          experience: formData.workStatus,
+          roles: formData.roles,
+          preferedLocations: formData.preferedLocations
+        }
+      });
+      console.log(SendingData.data);
+      if (SendingData && SendingData.data) {
+        setPopup(true);
       }
-    })
-      console.log(SendingData.data)
-      if(SendingData && SendingData.data){
-         setPopup(true)
-      }
+    } catch (err) {
+      console.log("Error while creating User " + err);
+    } finally {
+      setLoader(false);
     }
-    catch(err){
-      console.log("Error while creating User " + err)
-    }
-    finally{
-      setLoader(false)
-    }
-  
-    // Handle form submission here
   };
 
+  const cities = [
+    "New Delhi", "Bengaluru", "Mumbai", "Pune", "Chennai", 
+    "Hyderabad", "Gurugram", "Noida", "Ahmedabad", "Kolkata"
+  ];
 
-//  City lists
+  const experiencesList = ["0-1", "1-2", "2-3", "3-4", "4-5", "5-7", "7-10", "10+"];
+  
+  const jobRoles = [
+    "Software Engineer", "Frontend Developer", "Backend Developer", "Full Stack Developer",
+    "Data Scientist", "DevOps Engineer", "Product Manager", "UI/UX Designer",
+    "Business Analyst", "Digital Marketer", "Sales Executive", "HR Manager"
+  ];
 
-let cities = [
-  "New Delhi",
-  "Bengaluru",
-  "Mumbai", 
-  "Pune",
-  "Chennai",
-  "Hyderabad",
-  "Gurugram",
-  "Noida",
-  "Ahmedabad",
-  "Kolkata"
-];
-const experiencesList = [
-  "0-1",
-  "1-2",
-  "2-3",
-  "3-4",
-  "4-5",
-  "5-7",
-  "7-10",
-  "10"
-]; 
-const jobRoles = [
-  "Software Engineer",
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "Web Developer",
-  "React Developer",
-  "Node.js Developer",
-  "Java Developer",
-  "Python Developer",
-  "PHP Developer",
-  ".NET Developer",
-  "Android Developer",
-  "iOS Developer",
-  "Flutter Developer",
-  "Mobile App Developer",
-  "Game Developer",
-  "AI Engineer",
-  "Machine Learning Engineer",
-  "Data Scientist",
-  "Data Analyst",
-  "Business Intelligence Analyst",
-  "DevOps Engineer",
-  "Cloud Engineer",
-  "AWS Engineer",
-  "Azure Engineer",
-  "Cyber Security Engineer",
-  "Blockchain Developer",
-  "QA Engineer",
-  "Software Tester",
-  "Automation Tester",
-  "SDET",
-  "Software Architect",
-  "Technical Lead",
-  "CTO",
-  "Product Manager",
-  "Associate Product Manager",
-  "Project Manager",
-  "Program Manager",
-  "Scrum Master",
-  "Business Analyst",
-  "Product Owner",
-  "UI Designer",
-  "UX Designer",
-  "UI/UX Designer",
-  "Graphic Designer",
-  "Motion Graphics Designer",
-  "Video Editor",
-  "Animator",
-  "3D Artist",
-  "VFX Artist",
-  "Content Creator",
-  "Creative Director",
-  "Sales Executive",
-  "Sales Manager",
-  "Business Development Executive",
-  "Business Development Manager",
-  "Inside Sales Specialist",
-  "Pre-Sales Consultant",
-  "Marketing Executive",
-  "Marketing Manager",
-  "Digital Marketing Executive",
-  "Digital Marketing Manager",
-  "SEO Specialist",
-  "SEM Specialist",
-  "SMM Specialist",
-  "Email Marketing Specialist",
-  "Affiliate Marketing Specialist",
-  "Growth Hacker",
-  "Content Writer",
-  "Copywriter",
-  "Social Media Manager",
-  "Brand Manager",
-  "HR Executive",
-  "HR Manager",
-  "Talent Acquisition Specialist",
-  "Recruiter",
-  "IT Recruiter",
-  "Payroll Specialist",
-  "Training and Development Manager",
-  "Accountant",
-  "Chartered Accountant",
-  "Finance Manager",
-  "Financial Analyst",
-  "Investment Analyst",
-  "Audit Executive",
-  "Operations Executive",
-  "Operations Manager",
-  "Customer Support Executive",
-  "Customer Success Manager",
-  "Technical Support Engineer",
-  "MIS Executive",
-  "Data Entry Specialist",
-  "Office Administrator",
-  "Mechanical Engineer",
-  "Civil Engineer",
-  "Electrical Engineer",
-  "Electronics Engineer",
-  "Chemical Engineer",
-  "Automobile Engineer",
-  "Aerospace Engineer",
-  "Structural Engineer",
-  "Quality Control Engineer",
-  "R&D Engineer",
-  "Plant Engineer",
-  "Teacher",
-  "Professor",
-  "Lecturer",
-  "Trainer",
-  "Counselor",
-  "Instructional Designer",
-  "Logistics Executive",
-  "Supply Chain Manager",
-  "Warehouse Manager",
-  "Procurement Executive",
-  "Purchase Manager",
-  "Export Import Specialist"
-];
- const topITLocationsIndia = [
-  "Bangalore",
-  "Hyderabad",
-  "Pune",
-  "Chennai",
-  "Gurgaon",
-  "Noida",
-  "Delhi",
-  "Mumbai",
-  "Navi Mumbai",
-  "Thane",
-  "Kolkata",
-  "Ahmedabad",
-  "Vadodara",
-  "Indore",
-  "Jaipur",
-  "Chandigarh",
-  "Mohali",
-  "Trivandrum",
-  "Kochi",
-  "Coimbatore",
-  "Madurai",
-  "Salem",
-  "Vijayawada",
-  "Visakhapatnam",
-  "Bhubaneswar",
-  "Bhopal",
-  "Nagpur",
-  "Nashik",
-  "Aurangabad",
-  "Mysore",
-  "Hubli",
-  "Belgaum",
-  "Mangalore",
-  "Udupi",
-  "Udaipur",
-  "Jodhpur",
-  "Ujjain",
-  "Gwalior",
-  "Raipur",
-  "Ranchi",
-  "Patna",
-  "Lucknow",
-  "Kanpur",
-  "Prayagraj",
-  "Varanasi",
-  "Dehradun",
-  "Haridwar",
-  "Shimla",
-  "Una",
-  "Solan"
-];
+  const topITLocationsIndia = [
+    "Bangalore", "Hyderabad", "Pune", "Chennai", "Gurgaon", 
+    "Noida", "Delhi", "Mumbai", "Kolkata", "Ahmedabad"
+  ];
 
-
-function AddRoles(role:string){
-  const exist = formData.roles.some(each => each===role)
-  if(!exist){
-    setFormData(prev => ({...prev,roles:[...prev.roles,role]}))
+  function AddRoles(role: string) {
+    const exist = formData.roles.some(each => each === role);
+    if (!exist) {
+      setFormData(prev => ({ ...prev, roles: [...prev.roles, role] }));
+    }
   }
-}
 
-function RemoveRole(role:string){
-  setFormData(prev => ({...prev,roles:prev.roles.filter(e => e!==role)}))
-}
-
-function AddLocation(location:string){
-    const exist = formData.preferedLocations.some(each => each===location)
-  if(!exist){
-    setFormData(prev => ({...prev,preferedLocations:[...prev.preferedLocations,location]}))
+  function RemoveRole(role: string) {
+    setFormData(prev => ({ ...prev, roles: prev.roles.filter(e => e !== role) }));
   }
-}
-function removeLocation(location:string){
-  setFormData(prev => ({...prev,preferedLocations:prev.preferedLocations.filter(each => each!==location)}))
-}
 
-const [currCity,setCurCity] = useState('');
-const [cityarr,setCityArr] = useState(['']);
+  function AddLocation(location: string) {
+    const exist = formData.preferedLocations.some(each => each === location);
+    if (!exist) {
+      setFormData(prev => ({ ...prev, preferedLocations: [...prev.preferedLocations, location] }));
+    }
+  }
 
-function AddCity(e:any){
+  function removeLocation(location: string) {
+    setFormData(prev => ({ ...prev, preferedLocations: prev.preferedLocations.filter(each => each !== location) }));
+  }
 
-  setCityArr([e]);
-
-}
-const [showPopup,setPopup] = useState(false)
+  function AddCity(city: string) {
+    if (city.trim()) {
+      setCityArr([city]);
+      setCurCity('');
+    }
+  }
 
   return (
-    <div className="min-h-screen font-aman flex gap-10 justify-center  bg-gray-50 items-start   p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
+      <TopPopup text="Registration successful! Now you can login." show={showPopup} onClose={() => setPopup(false)} />
 
-       <TopPopup text="Now you can login." show={showPopup} onClose={()=> setPopup(false)}/>
-        {/* Left chota div */}
-
-       
-        <div className="bg-white sticky border mt-30 flex items-center flex-col border-slate-300 rounded-lg p-6 max-w-md">
-            <img src="https://static.naukimg.com/s/0/0/i/role-collection-ot.png" className='translate-x-[110px]' alt="" />
-
-            <div>
-                 <h3 className="text-lg font-bold flex justify-center text-gray-800 mb-4">
-    On registering, you can
-  </h3>
-  
-  <ul className="space-y-3 text-sm flex flex-col items-center">
-    <li className="flex items-start  gap-3">
-      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-        <span className="text-white text-xs">●</span>
-      </div>
-      <span className="text-gray-700 font-medium max-w-60">
-        Build your profile and let recruiters find you
-      </span>
-    </li>
-    
-    <li className="flex items-start gap-3">
-      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-        <span className="text-white text-xs">●</span>
-      </div>
-      <span className="text-gray-700 font-medium max-w-60">
-        Get job postings delivered right to your email
-      </span>
-    </li>
-    
-    <li className="flex items-start gap-3">
-      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-        <span className="text-white text-xs">●</span>
-      </div>
-      <span className="text-gray-700 font-medium max-w-60">
-        Find a job and grow your career
-      </span>
-    </li>
-  </ul>
- 
-            </div>
-      </div>
-
-
-
-      <div className=" w-[60%] bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className=" p-6 ">
-          <h1 className="text-2xl font-bold">Create your Naukri profile</h1>
-          <p className="text-slate-500 mt-2">Search & apply to jobs from India's No.1 Job Site</p>
-        </div>
-
-        {/* Form */}
-
-        <div className='flex items-start pr-4 '>
-
-             <form onSubmit={handleSubmit} className="p-6  space-y-6">
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full name<span className='text-red-500'>*</span>
-            </label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder="What is your name?"
-              className="w-[90%] px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              required
-            />
-          </div>
-
-          {/* Email */}
-          <div className='w-[90%]'>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email ID<span className='text-red-500'>*</span>
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Tell us your Email ID"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              required
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              We'll send relevant jobs and updates to this email
-            </p>
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password<span className='text-red-500'>*</span>
-            </label>
-            <div className="relative w-[90%] ">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="(Minimum 6 characters)"
-                className=" w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition pr-10"
-                
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              This helps your account stay protected
-            </p>
-          </div>
-
-          {/* Mobile Number */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Mobile number<span className='text-red-500'>*</span>
-            </label>
-            <div className="flex w-[90%]">
-              <div className="flex items-center px-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50">
-                <span className="text-gray-600">+91</span>
-              </div>
-              <input
-                type="tel"
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleChange}
-                placeholder="Enter your mobile number"
-                className="flex-1 px-4 w-full py-3 border  border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                required
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Recruiters will contact you on this number
-            </p>
-          </div>
-
-          {/* Work Status and Cities */}
-          <div className=''>
-            <label className="block text-sm font-bold mb-3">
-              Work Experience<span className='text-red-500'>*</span>
-            </label>
-             <select
-             onChange={(e)=> setFormData(prev => ({...prev,workStatus:e.target.value}))}
-             className="w-[90%] text-slate-500 p-3 border rounded-lg focus:outline-blue-500" name="" id="">
-                <option value="" hidden>Experience</option>
-                {
-                  experiencesList.map(each => {
-                    return <option value={each}>{each} yrs</option>
-                  })
-                }
-              </select>
-
-            {/* If fresher or experienced selected */}
-
-            <div className='w-[50%] mt-6'>
-
-                <div className='flex flex-col justify-between'>
-                    <span className='font-bold'>Current city<span className='text-red-500'>*</span></span>
-
-                    <div className='mb-6 mt-2'>
-                      {cityarr[0] &&
-                        cityarr.map((e:any)=>{
-                          return <span
-                          onClick={()=>{
-                            AddCity('')
-                            setCurCity('');
-                          }}
-                          className='px-3 py-2 bg-blue-100 font-medium text-sm rounded-full'>{e} <span className='font-bold text-xl cursor-pointer'>x</span></span>
-                        })
-                      }
-                    </div>
-                </div>
-
-                <div>
-                    <input 
-                    onChange={(e)=> setCurCity(e.target.value)}
-                    type="text" placeholder='Mention the city you live in' className='w-full p-3 text-sm rounded-2xl border border-slate-300' />
-                    <button className={`px-3 py-1 ${currCity  ? 'bg-blue-100 font-medium cursor-pointer':'bg-slate-400'} rounded-full mt-2 text-slate-800`}
-                    
-                    onClick={(e)=>{
-                      e.preventDefault()
-                      AddCity(currCity)
-                    }}
-                    >Add+</button>
-                </div>
-
-                <div className='flex flex-col mt-3 gap-3'>
-                    <span className='text-slate-500 text-sm'>Suggestions:</span>
-                    <div className='flex gap-3 flex-wrap'>
-                    {
-                        cities.map((each:any)=>{
-                            return <button
-                            onClick={(e)=>{
-                              e.preventDefault()
-                              setCurCity(each);
-                              AddCity(each);
-                            }}
-                            className='border cursor-pointer hover:bg-blue-100 hover:text-blue-500 rounded-full border-slate-300 text-slate-500 px-3 py-2'>{each + "+"}</button>
-                        })
-                    }
-                    </div>
-                   
-                </div>
-            </div>
-          </div>
-
-         {/* Job Roles Interests*/}
-          <div>
-              <label className="block font-medium text-gray-700 mb-1">
-                Select Job Roles *
-              </label>
-
-              <div className='flex mt-2 flex-wrap gap-2'>
-                {
-                  formData.roles.map(e=>{
-                    return <span className='px-3 flex items-center gap-2 py-1 text-white bg-black rounded-2xl' key={e}>{e} <span onClick={()=>{
-                      RemoveRole(e)
-                    }} className='font-semibold cursor-pointer'>X</span></span>
-                  })
-                }
-              </div>
-              <select
-                onChange={(e)=>{
-                     AddRoles(e.target.value)
-                }}
-              className="w-full mt-3 text-slate-500 p-3 border rounded-lg focus:outline-blue-500" name="" id="">
-                <option value="" hidden>Roles</option>
-                {
-                  jobRoles.map(each => {
-                    return <option value={each}>{each}</option>
-                  })
-                }
-              </select>
-          </div>
-
-          {/* Prefered locations*/}
-          <div>
-              <label className="block font-medium text-gray-700 mb-1">
-                Prefered locations *
-              </label>
-
-              <div className='flex mt-2 flex-wrap gap-2'>
-                {
-                  formData.preferedLocations.map(e=>{
-                    return <span className='px-3 flex items-center gap-2 py-1 text-white bg-black rounded-2xl' key={e}>{e} <span onClick={()=>{
-                      removeLocation(e)
-                    }} className='font-semibold cursor-pointer'>X</span></span>
-                  })
-                }
-              </div>
-              <select
-                onChange={(e)=>{
-                     AddLocation(e.target.value)
-                }}
-              className="w-full mt-3 text-slate-500 p-3 border rounded-lg focus:outline-blue-500" name="" id="">
-                <option value="" hidden>Roles</option>
-                {
-                  topITLocationsIndia.map(each => {
-                    return <option value={each}>{each}</option>
-                  })
-                }
-              </select>
-          </div>
-
-          {/* Promotions Checkbox */}
-          <label className="flex items-start space-x-3 cursor-pointer">
-            <div className="relative mt-1">
-              <input
-                type="checkbox"
-                name="promotions"
-                checked={formData.promotions}
-                onChange={handleChange}
-                className="sr-only"
-              />
-              <div className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
-                formData.promotions 
-                  ? 'border-blue-600 bg-blue-600' 
-                  : 'border-gray-300'
-              }`}>
-                {formData.promotions && <FaCheck className="text-white text-xs" />}
-              </div>
-            </div>
-            <span className="text-sm text-gray-700">
-              Send me important updates & promotions via SMS, email, and WhatsApp
-            </span>
-          </label>
-
-          {/* Terms */}
-          <div className="text-center text-sm text-gray-600">
-            <p>
-              By clicking Register, you agree to the{' '}
-              <a href="#" className="text-blue-600 hover:underline">Terms and Conditions</a>
-              {' '}&{' '}
-              <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
-              {' '}of Naukri.com
-            </p>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            
-            type="submit"
-            disabled={!AllFilled()}
-            className={`w-full flex justify-center  text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform  ${AllFilled() ? 'bg-green-500 cursor-pointer hover:bg-green-600 hover:scale-[1.02]':'bg-slate-400 text-slate-800 cursor-not-allowed'}`}
+        <div className="text-center mb-10">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="inline-block mb-4"
           >
-           {loader ? <Spinner/>:'Register Now'}
-          </button>
-        </form>
-            {/* Continue with google stuff */}
-           <div className='flex items-center gap-5'>
-                 <div className='flex flex-col items-center'>
-                   <div className="h-23 w-px bg-slate-300"></div>
-                    <span className='text-slate-400'>Or</span>
-                    <div className="h-23 w-px bg-slate-300"></div>
-                 </div>
-
-                 <div >
-                    <span>Continue with</span>
-                    <button className='flex border cursor-pointer justify-center  border-blue-500 rounded-full px-5 py-2 gap-2 items-center'>
-                        <img src="https://cdn3.iconfinder.com/data/icons/logos-brands-3/24/logo_brand_brands_logos_google-512.png" className='w-4 h-4' alt="" />
-                        <span className='text-blue-500 font-medium'>Google</span>
-                    </button>
-                 </div>
-           </div>
+            <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto shadow-xl">
+              <FaUser className="w-10 h-10 text-white" />
+            </div>
+          </motion.div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Join Naukri.com
+          </h1>
+          <p className="text-gray-600 mt-3 text-lg">India's #1 Job Platform • Get Discovered by Top Companies</p>
+          
+          {/* Progress Steps */}
+          <div className="flex justify-center mt-8 mb-12">
+            {[1, 2, 3].map((step) => (
+              <div key={step} className="flex items-center">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activeStep >= step ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' : 'bg-gray-200 text-gray-400'}`}>
+                  {step}
+                </div>
+                {step < 3 && (
+                  <div className={`w-24 h-1 ${activeStep > step ? 'bg-gradient-to-r from-blue-500 to-purple-500' : 'bg-gray-200'}`} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-       
+
+        <div className="flex justify-center gap-8">
+          
+
+          {/* Main Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="lg:w-2/3"
+          >
+            <div className="bg-gradient-to-br from-white to-gray-50/95 rounded-3xl shadow-2xl border border-white/50 backdrop-blur-sm overflow-hidden">
+              {/* Form Header */}
+              <div className="p-8 bg-gradient-to-r from-blue-600/5 to-purple-600/5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-800">Create Your Profile</h2>
+                    <p className="text-gray-600 mt-2">Fill in your details to get started</p>
+                  </div>
+                  <div className="hidden lg:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full">
+                    <FaStar className="w-4 h-4" />
+                    <span className="text-sm font-medium">Step {activeStep} of 3</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  {/* Personal Details Section */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <FaUser className="w-5 h-5 text-white" />
+                      </div>
+                      Personal Details
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Full Name */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <input
+                            type="text"
+                            name="fullName"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            placeholder="What is your name?"
+                            className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                            required
+                          />
+                          <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                        </div>
+                      </div>
+
+                      {/* Email */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Email ID <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="you@example.com"
+                            className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                            required
+                          />
+                          <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">We'll send relevant jobs to this email</p>
+                      </div>
+
+                      {/* Password */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Password <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Minimum 6 characters"
+                            className="w-full pl-12 pr-12 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                            required
+                          />
+                          <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                          >
+                            {showPassword ? (
+                              <FaEyeSlash className="w-5 h-5 text-gray-400" />
+                            ) : (
+                              <FaEye className="w-5 h-5 text-gray-400" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Mobile Number */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Mobile Number <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <FaPhone className="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                            <span className="text-gray-500 font-medium">+91</span>
+                          </div>
+                          <input
+                            type="tel"
+                            name="mobile"
+                            value={formData.mobile}
+                            onChange={handleChange}
+                            placeholder="Enter 10-digit number"
+                            className="w-full pl-24 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                            required
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">Recruiters will contact you here</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Experience & Location Section */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                        <FaBriefcase className="w-5 h-5 text-white" />
+                      </div>
+                      Experience & Location
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Work Experience */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Work Experience <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative group">
+                          <select
+                            value={formData.workStatus}
+                            onChange={(e) => setFormData(prev => ({ ...prev, workStatus: e.target.value }))}
+                            className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 appearance-none cursor-pointer"
+                          >
+                            <option value="" disabled hidden>Select experience</option>
+                            {experiencesList.map((exp, idx) => (
+                              <option key={idx} value={exp}>{exp} years</option>
+                            ))}
+                          </select>
+                          <FaBriefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Current City */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Current City <span className="text-red-500">*</span>
+                        </label>
+                        <div className="space-y-3">
+                          <div className="flex gap-2">
+                            <div className="relative flex-1 group">
+                              <input
+                                type="text"
+                                value={currCity}
+                                onChange={(e) => setCurCity(e.target.value)}
+                                placeholder="Enter your city"
+                                className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                              />
+                              <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                AddCity(currCity);
+                              }}
+                              disabled={!currCity.trim()}
+                              className={`px-6 rounded-xl font-medium transition-all duration-300 ${currCity.trim()
+                                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg transform hover:-translate-y-0.5'
+                                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                }`}
+                            >
+                              Add
+                            </button>
+                          </div>
+                          
+                          {/* Selected City */}
+                          <AnimatePresence>
+                            {cityarr[0] && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex items-center gap-2 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl"
+                              >
+                                <FaMapMarkerAlt className="w-5 h-5 text-blue-500" />
+                                <span className="font-medium text-blue-700">{cityarr[0]}</span>
+                                <button
+                                type='button'
+                                  onClick={() => {
+                                    AddCity('');
+                                    setCurCity('');
+                                    setCityArr([])
+                                  }}
+                                  className="ml-auto p-1 hover:bg-blue-100 rounded-lg transition-colors"
+                                >
+                                  <FaTimes className="w-4 h-4 text-blue-500" />
+                                </button>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          {/* City Suggestions */}
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-500 mb-2">Popular cities:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {cities.slice(0, 6).map((city, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setCurCity(city);
+                                    AddCity(city);
+                                  }}
+                                  className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300"
+                                >
+                                  {city}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Preferences Section */}
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                        <FaLocationArrow className="w-5 h-5 text-white" />
+                      </div>
+                      Job Preferences
+                    </h3>
+
+                    {/* Job Roles */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Interested Job Roles
+                      </label>
+                      
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {formData.roles.map((role, idx) => (
+                          <motion.div
+                            key={idx}
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full flex items-center gap-2 shadow-lg"
+                          >
+                            <span className="text-sm font-medium">{role}</span>
+                            <button
+                              type="button"
+                              onClick={() => RemoveRole(role)}
+                              className="w-5 h-5 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+                            >
+                              <FaTimes className="w-3 h-3" />
+                            </button>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      <div className="relative group">
+                        <select
+                          onChange={(e) => {
+                            AddRoles(e.target.value);
+                            e.target.value = '';
+                          }}
+                          className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 appearance-none cursor-pointer"
+                        >
+                          <option value="" hidden>Select job roles...</option>
+                          {jobRoles.map((role, idx) => (
+                            <option key={idx} value={role}>{role}</option>
+                          ))}
+                        </select>
+                        <FaBriefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Preferred Locations */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Preferred Locations
+                      </label>
+                      
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {formData.preferedLocations.map((location, idx) => (
+                          <motion.div
+                            key={idx}
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full flex items-center gap-2 shadow-lg"
+                          >
+                            <FaMapMarkerAlt className="w-4 h-4" />
+                            <span className="text-sm font-medium">{location}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeLocation(location)}
+                              className="w-5 h-5 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+                            >
+                              <FaTimes className="w-3 h-3" />
+                            </button>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      <div className="relative group">
+                        <select
+                          onChange={(e) => {
+                            AddLocation(e.target.value);
+                            e.target.value = '';
+                          }}
+                          className="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 appearance-none cursor-pointer"
+                        >
+                          <option value="" hidden>Select preferred locations...</option>
+                          {topITLocationsIndia.slice(0, 20).map((location, idx) => (
+                            <option key={idx} value={location}>{location}</option>
+                          ))}
+                        </select>
+                        <FaMapMarkerAlt className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Promotions Checkbox */}
+                  <div className="p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl border border-gray-200">
+                    <label className="flex items-start space-x-3 cursor-pointer">
+                      <div className="relative mt-1">
+                        <input
+                          type="checkbox"
+                          name="promotions"
+                          checked={formData.promotions}
+                          onChange={handleChange}
+                          className="sr-only"
+                        />
+                        <div className={`w-6 h-6 border-2 rounded-lg flex items-center justify-center transition-all duration-300 ${formData.promotions
+                            ? 'border-blue-600 bg-gradient-to-r from-blue-500 to-blue-600'
+                            : 'border-gray-300 bg-white'
+                          }`}>
+                          {formData.promotions && <FaCheck className="text-white text-sm" />}
+                        </div>
+                      </div>
+                      <span className="text-gray-700 font-medium">
+                        Yes, send me important updates & promotions via SMS, email, and WhatsApp
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Terms & Submit */}
+                  <div className="space-y-6">
+                    <div className="text-center text-sm text-gray-600">
+                      <p>
+                        By clicking Register, you agree to our{' '}
+                        <a href="#" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                          Terms and Conditions
+                        </a>
+                        {' '}&{' '}
+                        <a href="#" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                          Privacy Policy
+                        </a>
+                      </p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={!AllFilled() || loader}
+                      className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform ${AllFilled() && !loader
+                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        }`}
+                    >
+                      {loader ? (
+                        <div className="flex items-center justify-center gap-3">
+                          <Spinner />
+                          <span>Creating your account...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-3">
+                          <span>Create Naukri Profile</span>
+                          <FaArrowRight className="w-5 h-5" />
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                </form>
+
+            
+
+               
+              </div>
+            </div>
+
+            {/* Footer Note */}
+            <div className="mt-8 text-center text-sm text-gray-500">
+              <p>Already have an account? <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">Login here</a></p>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
